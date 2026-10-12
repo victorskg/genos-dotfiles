@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -euo pipefail
+set -Eeuo pipefail
 
 DOTFILES_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 
@@ -21,13 +21,21 @@ packages=(
   wireplumber
 )
 
-echo "Installing GenOS base packages..."
+echo "==> Installing GenOS packages"
 sudo pacman -S --needed "${packages[@]}"
 
-echo "Enabling networking..."
+echo "==> Enabling NetworkManager"
 sudo systemctl enable NetworkManager
 
-echo "Deploying GenOS configuration..."
+echo "==> Checking dotfile packages"
+for package in hypr waybar kitty; do
+  if [[ ! -d "$DOTFILES_DIR/home/$package" ]]; then
+    echo "ERROR: Missing Stow package: $package" >&2
+    exit 1
+  fi
+done
+
+echo "==> Deploying configurations"
 cd "$DOTFILES_DIR"
 
 for package in hypr waybar kitty; do
@@ -36,6 +44,6 @@ done
 
 echo
 echo "GenOS base setup complete."
-echo "Reboot, log in on a TTY, and run: Hyprland"
+echo "Start the graphical session locally with: start-hyprland"
 
 
