@@ -7,6 +7,7 @@ packages=(
   git
   stow
   hyprland
+  hyprlock
   waybar
   fuzzel
   kitty
