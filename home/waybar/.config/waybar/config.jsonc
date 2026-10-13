@@ -38,8 +38,8 @@
   },
 
   "pulseaudio": {
-    "format": "Audio {volume}%",
-    "format-muted": "Muted",
+    "format": " {volume}%",
+    "format-muted": "󰝟",
     "on-click": "sh -c 'exec \"$HOME/.local/bin/waybar-audio\"'"
   },
 
