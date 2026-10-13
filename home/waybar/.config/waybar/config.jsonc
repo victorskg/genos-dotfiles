@@ -7,6 +7,11 @@
   "modules-center": ["hyprland/workspaces"],
   "modules-right": ["bluetooth", "network", "pulseaudio", "battery", "custom/power"],
 
+  "hyprland/workspaces": {
+    "all-outputs": true,
+    "ignore-workspaces": ["^ext-.*"]
+  },
+
   "clock": {
     "format": "{:%H:%M  %a %d %b}",
     "tooltip": false,
