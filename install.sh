@@ -19,6 +19,9 @@ packages=(
   pipewire
   pipewire-pulse
   wireplumber
+  bluez
+  bluez-utils
+  bluetui
 )
 
 echo "==> Installing GenOS packages"
@@ -26,6 +29,9 @@ sudo pacman -S --needed "${packages[@]}"
 
 echo "==> Enabling NetworkManager"
 sudo systemctl enable NetworkManager
+
+echo "==> Enabling Bluetooth"
+sudo systemctl enable bluetooth.service
 
 echo "==> Checking dotfile packages"
 for package in hypr waybar kitty; do
