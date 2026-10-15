@@ -58,6 +58,7 @@ stow_packages=(
   gtk
   xdg
   cursor
+  ai
 )
 
 install_yay() {
