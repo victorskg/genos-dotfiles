@@ -19,6 +19,7 @@ laptop_ws = None
 focused_name = None
 last_main = None
 place = {}
+where = {}
 
 
 def call(cmd):
@@ -158,6 +159,68 @@ def undock():
     batch(cmds)
 
 
+def norm_addr(addr):
+    addr = str(addr).lower()
+    if addr.startswith("0x"):
+        return addr
+    return "0x" + addr
+
+
+def note(addr, ws_id):
+    key = norm_addr(addr)
+    if ws_id > 0:
+        where[key] = ws_id
+    else:
+        where.pop(key, None)
+
+
+def remember():
+    where.clear()
+    for client in query("j/clients"):
+        ws = client.get("workspace") or {}
+        ws_id = ws.get("id") or 0
+        name = str(ws.get("name") or "")
+        if ws_id > 0 and not name.startswith(EXT):
+            where[norm_addr(client["address"])] = ws_id
+
+
+def occupied():
+    groups = {}
+    for client in query("j/clients"):
+        if not client.get("mapped"):
+            continue
+        ws = client.get("workspace") or {}
+        ws_id = ws.get("id") or 0
+        name = str(ws.get("name") or "")
+        if ws_id <= 0 or name.startswith(EXT):
+            continue
+        groups.setdefault(ws_id, []).append(client)
+    return groups
+
+
+def fill_gap(closed_id):
+    groups = occupied()
+    if groups.get(closed_id):
+        return
+    higher = sorted(ws_id for ws_id in groups if ws_id > closed_id)
+    cmds = []
+    if higher:
+        for index, ws_id in enumerate(higher):
+            dest = closed_id + index
+            for client in groups[ws_id]:
+                if dest == ws_id:
+                    continue
+                addr = client["address"]
+                cmds.append(f"dispatch movetoworkspacesilent {dest},address:{addr}")
+                where[norm_addr(addr)] = dest
+        cmds.append(f"dispatch workspace {closed_id}")
+    else:
+        lower = [ws_id for ws_id in groups if ws_id < closed_id]
+        if lower:
+            cmds.append(f"dispatch workspace {max(lower)}")
+    batch(cmds)
+
+
 def rescan():
     had_external = external_name
     snapshot(query("j/monitors"), query("j/workspaces"))
@@ -167,6 +230,7 @@ def rescan():
         pull_to_external()
     elif had_external:
         undock()
+    remember()
 
 
 def handle(line):
@@ -191,6 +255,26 @@ def handle(line):
         return
     if line.startswith("monitoradded>>") or line.startswith("monitorremoved>>"):
         rescan()
+        return
+    if line.startswith("openwindow>>"):
+        addr, ws_name, _rest = line.split(">>", 1)[1].split(",", 2)
+        note(addr, int(ws_name) if ws_name.isdigit() else 0)
+        return
+    if line.startswith("movewindowv2>>"):
+        addr, ws_id_s, ws_name = line.split(">>", 1)[1].split(",", 2)
+        ws_id = int(ws_id_s) if ws_id_s.lstrip("-").isdigit() else 0
+        if ws_name.startswith(EXT):
+            ws_id = 0
+        note(addr, ws_id)
+        return
+    if line.startswith("movewindow>>"):
+        addr, ws_name = line.split(">>", 1)[1].split(",", 1)
+        note(addr, int(ws_name) if ws_name.isdigit() else 0)
+        return
+    if line.startswith("closewindow>>"):
+        ws_id = where.pop(norm_addr(line.split(">>", 1)[1]), None)
+        if ws_id:
+            fill_gap(ws_id)
 
 
 def main():
