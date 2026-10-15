@@ -1,0 +1,9 @@
+@import "../genos/colors.css";
+
+window { background-color: rgba(0, 0, 0, 0); }
+#panel { background-color: @surface; border-radius: 8px; padding: 12px; }
+#time { color: @fg; font-size: 28px; font-weight: bold; }
+#date { color: @fg; font-size: 14px; }
+#meta { color: @muted; font-size: 13px; }
+calendar { color: @fg; background-color: @surface; }
+calendar:selected { color: @bg; background-color: @accent; }

@@ -1,0 +1,17 @@
+@import "../genos/colors.css";
+
+window { background-color: rgba(0, 0, 0, 0); }
+#panel { background-color: @surface; border-radius: 8px; padding: 10px; }
+#lock { font-family: "Symbols Nerd Font"; }
+#title { color: @fg; font-size: 14px; font-weight: bold; }
+#status, #meta, #pass-label, #lock { color: @muted; font-size: 12px; }
+#ssid { color: @fg; font-size: 14px; }
+#error { color: @danger; font-size: 12px; }
+button { background: transparent; color: @fg; border: none; box-shadow: none; padding: 2px 8px; }
+button:hover { background-color: @overlay; }
+button:disabled { color: @faint; }
+list, row, scrolledwindow { background: transparent; border: none; }
+row { padding: 4px 6px; border-radius: 6px; }
+row:hover { background-color: @overlay; }
+row.connected, row.connected:hover { background-color: @accent; color: @bg; }
+entry { background-color: @overlay; color: @fg; border: none; border-radius: 6px; padding: 4px 8px; caret-color: @fg; }

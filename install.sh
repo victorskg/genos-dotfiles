@@ -27,6 +27,9 @@ packages=(
   bluetui
   gcc
   pkgconf
+  inter-font
+  ttf-jetbrains-mono
+  ttf-nerd-fonts-symbols
 )
 
 echo "==> Installing GenOS packages"
@@ -39,12 +42,15 @@ echo "==> Enabling Bluetooth"
 sudo systemctl enable bluetooth.service
 
 echo "==> Checking dotfile packages"
-for package in hypr waybar kitty; do
+for package in hypr waybar kitty theme fuzzel mako gtk; do
   if [[ ! -d "$DOTFILES_DIR/home/$package" ]]; then
     echo "ERROR: Missing Stow package: $package" >&2
     exit 1
   fi
 done
+
+echo "==> Applying Cinder theme"
+"$DOTFILES_DIR/home/theme/.config/genos/apply-theme"
 
 echo "==> Building waybar popups"
 mkdir -p "$HOME/.local/bin"
@@ -62,9 +68,11 @@ gcc -O2 -o "$HOME/.local/bin/waybar-audio" \
 echo "==> Deploying configurations"
 cd "$DOTFILES_DIR"
 
-for package in hypr waybar kitty; do
+for package in hypr waybar kitty theme fuzzel mako gtk; do
   stow --no-folding --target="$HOME" --dir=home "$package"
 done
+
+fc-cache -f
 
 echo
 echo "GenOS base setup complete."

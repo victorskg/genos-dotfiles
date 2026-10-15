@@ -1,0 +1,17 @@
+@import "../genos/colors.css";
+
+window { background-color: rgba(0, 0, 0, 0); }
+#panel { background-color: @surface; border-radius: 8px; padding: 10px; }
+#title { color: @fg; font-size: 14px; font-weight: bold; }
+#ssid { color: @fg; font-size: 14px; }
+#error { color: @danger; font-size: 12px; }
+#percent { color: @fg; font-size: 14px; }
+button { background: transparent; color: @fg; border: none; box-shadow: none; padding: 2px 8px; }
+button:hover { background-color: @overlay; }
+list, row, scrolledwindow { background: transparent; border: none; }
+row { padding: 4px 6px; border-radius: 6px; }
+row:hover { background-color: @overlay; }
+row.current, row.current:hover { background-color: @accent; color: @bg; }
+scale trough { background-color: @overlay; min-height: 6px; border-radius: 3px; }
+scale highlight { background-color: @accent; border-radius: 3px; }
+scale slider { background-color: @fg; min-width: 14px; min-height: 14px; }

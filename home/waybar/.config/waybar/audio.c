@@ -433,6 +433,13 @@ static void build_group(GtkWidget *box, Group *group) {
     g_signal_connect(group->list, "row-activated", G_CALLBACK(on_row), group);
 }
 
+static void load_theme(GtkCssProvider *provider, const char *name, const char *fallback) {
+    char *path = g_build_filename(g_get_home_dir(), ".config", "waybar", name, NULL);
+    if (!gtk_css_provider_load_from_path(provider, path, NULL))
+        gtk_css_provider_load_from_data(provider, fallback, -1, NULL);
+    g_free(path);
+}
+
 int main(void) {
     static const char css[] =
         "window { background-color: rgba(0, 0, 0, 0); }"
@@ -499,7 +506,7 @@ int main(void) {
     gtk_container_add(GTK_CONTAINER(window), backdrop);
 
     provider = gtk_css_provider_new();
-    gtk_css_provider_load_from_data(provider, css, -1, NULL);
+    load_theme(provider, "popup-audio.css", css);
     gtk_style_context_add_provider_for_screen(screen, GTK_STYLE_PROVIDER(provider),
                                               GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 

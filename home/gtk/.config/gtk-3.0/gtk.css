@@ -1,0 +1,27 @@
+@import url("../genos/colors.css");
+
+window,
+.background {
+    background-color: @bg;
+    color: @fg;
+}
+
+headerbar,
+.titlebar {
+    background-color: @surface;
+    color: @fg;
+}
+
+entry,
+textview,
+treeview {
+    background-color: @surface;
+    color: @fg;
+}
+
+selection,
+treeview:selected,
+.view:selected {
+    background-color: @accent;
+    color: @bg;
+}
