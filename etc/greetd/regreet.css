@@ -12,7 +12,7 @@ frame.background {
     border: 1px solid #2A2022;
     border-top-color: #B8863B;
     border-top-width: 2px;
-    border-radius: 16px;
+    border-radius: 12px;
     box-shadow: none;
 }
 
@@ -39,7 +39,7 @@ entry {
     color: #E4DCD2;
     caret-color: #B8863B;
     border: 1px solid #2A2022;
-    border-radius: 8px;
+    border-radius: 4px;
     padding: 6px 10px;
     min-height: 16px;
 }
@@ -52,14 +52,14 @@ combobox button {
     background-color: #1F1819;
     color: #E4DCD2;
     border: 1px solid #2A2022;
-    border-radius: 8px;
+    border-radius: 4px;
 }
 
 button.suggested-action {
     background-color: #C1121F;
     color: #E4DCD2;
     border: none;
-    border-radius: 8px;
+    border-radius: 4px;
     padding: 6px 16px;
 }
 
@@ -71,7 +71,7 @@ button.destructive-action {
     background-color: transparent;
     color: #B8ACA6;
     border: 1px solid #2A2022;
-    border-radius: 8px;
+    border-radius: 4px;
     padding: 6px 14px;
 }
 

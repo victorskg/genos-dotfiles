@@ -85,4 +85,6 @@ The theme is defined in `home/theme/.config/genos/palette.conf`. `variant=blood`
 
 The window border, the launcher border, and the power icon use the bright accent. Fills that carry foreground text keep the darker accent. Blur brightness is 1. `blur_vibrancy` keeps saturation in the glass.
 
+Window corners are `radius_window` (6). Notifications are `radius_popup` (10). Bar groups are 10. The clock popup is 12, and the Wi-Fi and volume popups are 8. Workspace pills stay circles.
+
 `~/.config/genos/opacity-mode` switches `opacity_mode` between `transparent` and `opaque`, regenerates the theme, and reloads Hyprland, Waybar, and Mako. Opaque mode turns blur off.

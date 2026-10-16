@@ -6,7 +6,7 @@ window { background-color: rgba(0, 0, 0, 0); }
     background-color: @surface;
     border: 1px solid @line;
     border-top: 2px solid @gold;
-    border-radius: 16px;
+    border-radius: 12px;
     padding: 20px 22px 16px;
 }
 
@@ -52,7 +52,7 @@ calendar.button {
     color: @gold;
     background: transparent;
     border: none;
-    border-radius: 8px;
+    border-radius: 4px;
     padding: 4px 8px;
     margin: 0 4px;
 }
@@ -62,7 +62,7 @@ calendar.button:hover { background-color: @overlay; }
 calendar:selected {
     color: @fg;
     background-color: @accent;
-    border-radius: 8px;
+    border-radius: 4px;
 }
 
 calendar:indeterminate { color: @faint; }

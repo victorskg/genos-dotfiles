@@ -12,7 +12,7 @@ window#waybar {
 .modules-right {
     margin: 0 8px;
     padding: 0 10px;
-    border-radius: 14px;
+    border-radius: 10px;
     border: 1px solid @line;
     border-top-color: @gold;
 }
@@ -29,7 +29,7 @@ menu {
     background: @surface;
     border: 1px solid @line;
     border-top-color: @gold;
-    border-radius: 14px;
+    border-radius: 10px;
     color: @fg;
     padding: 6px;
 }
@@ -37,7 +37,7 @@ menu {
 menuitem {
     color: @fg;
     padding: 6px 14px;
-    border-radius: 8px;
+    border-radius: 4px;
 }
 
 menuitem:hover {
@@ -171,7 +171,7 @@ tooltip {
     background: @surface;
     border: 1px solid @line;
     border-top-color: @gold;
-    border-radius: 14px;
+    border-radius: 10px;
 }
 
 tooltip label {

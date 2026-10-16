@@ -7,7 +7,7 @@ window { background-color: rgba(0, 0, 0, 0); }
     background-color: alpha(@surface, 0.8);
     border: 1px solid alpha(@line, 0.7);
     border-top-color: alpha(@gold, 0.45);
-    border-radius: 12px;
+    border-radius: 8px;
     padding: 0;
 }
 
@@ -55,7 +55,7 @@ flowboxchild.connected #ssid { font-weight: bold; }
     font-size: 11px;
     margin-top: 6px;
     padding: 5px 9px;
-    border-radius: 8px;
+    border-radius: 4px;
     background-color: alpha(@danger, 0.1);
     border: 1px solid alpha(@danger, 0.3);
 }
@@ -80,7 +80,7 @@ button {
     background: transparent;
     border: none;
     box-shadow: none;
-    border-radius: 8px;
+    border-radius: 4px;
     padding: 2px;
     min-width: 24px;
     min-height: 24px;
@@ -98,7 +98,7 @@ button:disabled { color: @faint; background: transparent; }
 switch {
     background-color: @overlay;
     border: 1px solid @line;
-    border-radius: 10px;
+    border-radius: 6px;
     min-width: 30px;
     min-height: 16px;
     transition: background-color 220ms ease, border-color 220ms ease;
@@ -111,7 +111,7 @@ switch:checked {
 
 switch slider {
     background-color: @muted;
-    border-radius: 8px;
+    border-radius: 4px;
     min-width: 12px;
     min-height: 12px;
     transition: all 220ms ease;
@@ -133,7 +133,7 @@ flowboxchild { padding: 0; margin: 0; outline: none; }
     padding: 10px 6px 8px;
     min-width: 72px;
     min-height: 78px;
-    border-radius: 10px;
+    border-radius: 6px;
     border: 1px solid alpha(@line, 0.45);
     transition: background-color 180ms ease, border-color 180ms ease;
 }
@@ -155,7 +155,7 @@ flowboxchild.connected:hover #item {
 tooltip {
     background-color: alpha(@surface, 0.94);
     border: 1px solid alpha(@gold, 0.45);
-    border-radius: 8px;
+    border-radius: 4px;
 }
 
 tooltip #tip {
@@ -172,7 +172,7 @@ entry {
     font-family: Inter, sans-serif;
     font-size: 12px;
     border: 1px solid alpha(@line, 0.8);
-    border-radius: 8px;
+    border-radius: 4px;
     padding: 5px 9px;
     min-height: 0;
     caret-color: @gold;
