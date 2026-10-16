@@ -9,6 +9,8 @@ packages=(
   base-devel
   hyprland
   hyprlock
+  greetd
+  greetd-regreet
   waybar
   fuzzel
   kitty
@@ -136,6 +138,16 @@ done
 
 fc-cache -f
 
+echo "==> Installing the login screen"
+sudo install -d -m 755 /etc/greetd
+sudo install -m 644 "$DOTFILES_DIR/etc/greetd/config.toml" /etc/greetd/config.toml
+sudo install -m 644 "$DOTFILES_DIR/etc/greetd/hyprland.lua" /etc/greetd/hyprland.lua
+sudo rm -f /etc/greetd/hyprland.conf
+sudo install -m 644 "$DOTFILES_DIR/etc/greetd/regreet.toml" /etc/greetd/regreet.toml
+sudo install -m 644 "$DOTFILES_DIR/etc/greetd/regreet.css" /etc/greetd/regreet.css
+sudo systemctl disable getty@tty1.service
+sudo systemctl enable greetd.service
+
 echo
 echo "GenOS base setup complete."
-echo "Start the graphical session locally with: start-hyprland"
+echo "The next boot opens the GenOS login screen and starts Hyprland."

@@ -1,0 +1,16 @@
+[GTK]
+application_prefer_dark_theme = true
+font_name = "Inter 13"
+cursor_blink = true
+
+[commands]
+reboot = ["systemctl", "reboot"]
+poweroff = ["systemctl", "poweroff"]
+
+[appearance]
+greeting_msg = "GenOS"
+
+[widget.clock]
+format = "%H:%M"
+resolution = "1s"
+label_width = 280

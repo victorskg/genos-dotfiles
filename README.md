@@ -38,11 +38,7 @@ chmod +x install.sh
 
 Replace `YOUR_REPOSITORY_URL` with your Git repository URL.
 
-After installation, log in on a local TTY and run:
-
-```bash
-start-hyprland
-```
+After installation, reboot. The GenOS login screen starts Hyprland.
 
 ## Theme
 

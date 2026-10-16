@@ -4,7 +4,7 @@ Expected behavior of the GenOS session. `$mod` is Super.
 
 ## Session
 
-`start-hyprland` starts Hyprland. On start it launches Waybar, Mako, the polkit agent, and `workspace-follow.py`. Reloading the config restarts the workspace follower.
+`greetd` owns TTY 1 and draws the GenOS login screen with ReGreet inside Hyprland, started through `start-hyprland`. The login Hyprland reads `/etc/greetd/hyprland.lua`. The keyboard is ABNT2. After a successful login, the only session is Hyprland through `start-hyprland`, which reads `~/.config/hypr/hyprland.lua`. That session launches Waybar, Mako, the polkit agent, and `workspace-follow.py`. Reloading the config restarts the workspace follower. If the login screen fails, another TTY is still available with Ctrl+Alt+F2.
 
 Layout is dwindle. Keyboard layout is Brazilian ABNT2. New windows open on an empty workspace (`open-alone`).
 
@@ -71,6 +71,6 @@ The clock popup keeps the time, the date, and the calendar.
 
 ## Look
 
-The theme is defined in `home/theme/.config/genos/palette.conf`. `variant=blood` uses crimson for focus. `variant=eclipse` uses violet. Run `apply-theme`, then `hyprctl reload`. UI type is Inter, the lock clock is EB Garamond, and GTK prefers the dark theme. Kitty keeps its own colors. `apply-theme` only sets Kitty `background_opacity` from `opacity_terminal`.
+The theme is defined in `home/theme/.config/genos/palette.conf`. `variant=blood` uses crimson for focus. `variant=eclipse` uses violet. Run `apply-theme`, then `hyprctl reload`. `apply-theme` writes `colors.lua` for Hyprland and `colors.conf` for hyprlock. UI type is Inter, the lock clock is EB Garamond, and GTK prefers the dark theme. Kitty keeps its own colors. `apply-theme` only sets Kitty `background_opacity` from `opacity_terminal`.
 
 `~/.config/genos/opacity-mode` switches `opacity_mode` between `transparent` and `opaque`, regenerates the theme, and reloads Hyprland, Waybar, and Mako. Opaque mode turns blur off.

@@ -1,0 +1,81 @@
+window {
+    background-color: #0B0909;
+}
+
+label {
+    color: #B8ACA6;
+    font-family: Inter, sans-serif;
+}
+
+frame.background {
+    background-color: alpha(#161112, 0.94);
+    border: 1px solid #2A2022;
+    border-top-color: #B8863B;
+    border-top-width: 2px;
+    border-radius: 16px;
+    box-shadow: none;
+}
+
+#clock_frame {
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+}
+
+#clock_frame label {
+    color: #E4DCD2;
+    font-family: "EB Garamond";
+    font-size: 72px;
+}
+
+#message_label {
+    color: #E4DCD2;
+    font-family: "EB Garamond";
+    font-size: 28px;
+}
+
+entry {
+    background-color: #1F1819;
+    color: #E4DCD2;
+    caret-color: #B8863B;
+    border: 1px solid #2A2022;
+    border-radius: 8px;
+    padding: 6px 10px;
+    min-height: 16px;
+}
+
+entry:focus {
+    border-color: #C1121F;
+}
+
+combobox button {
+    background-color: #1F1819;
+    color: #E4DCD2;
+    border: 1px solid #2A2022;
+    border-radius: 8px;
+}
+
+button.suggested-action {
+    background-color: #C1121F;
+    color: #E4DCD2;
+    border: none;
+    border-radius: 8px;
+    padding: 6px 16px;
+}
+
+button.suggested-action:hover {
+    background-color: #E5383B;
+}
+
+button.destructive-action {
+    background-color: transparent;
+    color: #B8ACA6;
+    border: 1px solid #2A2022;
+    border-radius: 8px;
+    padding: 6px 14px;
+}
+
+button.destructive-action:hover {
+    color: #E4DCD2;
+    border-color: #B8863B;
+}
