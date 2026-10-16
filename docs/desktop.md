@@ -28,6 +28,16 @@ Layout is dwindle. Keyboard layout is Brazilian ABNT2. New windows open on an em
 | Super+Shift+Left | Move the window to `eDP-1` |
 | Super+Shift+Right | Move the window to `HDMI-A-1` |
 
+## Web apps
+
+`webapp add <name> <url>` writes `~/.local/share/applications/<name>.desktop`. Fuzzel lists it. The launcher runs `chromium --ozone-platform-hint=wayland --app=<url>`, so the site opens without the tab strip. `StartupWMClass` is `chrome-<host>_<path>-Default`, which is the class Chromium gives that window.
+
+The icon is a PNG in `~/.local/share/icons/hicolor/256x256/apps/`. The script requests the page's `apple-touch-icon`, then `<origin>/apple-touch-icon.png`, then `https://www.google.com/s2/favicons?domain=<url>&sz=256`.
+
+`webapp remove <name>` deletes that launcher and its icon. It leaves any desktop file whose `Exec` line was not written by `webapp add`.
+
+Sign-in for these windows is Chromium's default profile. Zen remains the handler for ordinary links.
+
 ## Workspaces and monitors
 
 The laptop panel is the monitor whose name starts with `eDP`. Any other connected monitor is external. If several externals exist, the focused one is chosen, otherwise the first.

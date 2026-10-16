@@ -12,6 +12,7 @@ Minimal personal Arch Linux dotfiles, designed as the foundation for a lightweig
 - Mako notifications
 - Thunar file manager
 - Zen Browser
+- Chromium, for web apps (`webapp add`, `webapp remove`)
 - Cursor
 - PipeWire audio
 - GNU Stow for configuration management

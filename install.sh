@@ -5,6 +5,7 @@ DOTFILES_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 
 packages=(
   git
+  curl
   stow
   base-devel
   hyprland
@@ -14,6 +15,7 @@ packages=(
   waybar
   fuzzel
   kitty
+  chromium
   mako
   thunar
   xdg-desktop-portal
@@ -115,6 +117,17 @@ done
 
 echo "==> Applying the GenOS theme"
 "$DOTFILES_DIR/home/theme/.config/genos/apply-theme"
+
+echo "==> Installing webapp"
+install -Dm755 "$DOTFILES_DIR/bin/webapp" "$HOME/.local/bin/webapp"
+path_line='export PATH="$HOME/.local/bin:$PATH"'
+if [[ ! -f $HOME/.bashrc ]]; then
+  printf '%s\n' "$path_line" >"$HOME/.bashrc"
+elif ! grep -qF '.local/bin' "$HOME/.bashrc"; then
+  tmp=$(mktemp)
+  printf '%s\n\n' "$path_line" | cat - "$HOME/.bashrc" >"$tmp"
+  mv "$tmp" "$HOME/.bashrc"
+fi
 
 echo "==> Building waybar popups"
 mkdir -p "$HOME/.local/bin"

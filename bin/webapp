@@ -1,0 +1,187 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+apps=${XDG_DATA_HOME:-$HOME/.local/share}/applications
+icons=${XDG_DATA_HOME:-$HOME/.local/share}/icons/hicolor/256x256/apps
+icon_root=${icons%/256x256/apps}
+
+usage() {
+  echo "usage: webapp add <name> <url>" >&2
+  echo "       webapp remove <name>" >&2
+  exit 1
+}
+
+icon_name() {
+  printf '%s' "$1" | tr '[:upper:]' '[:lower:]' | sed 's/[^[:alnum:]]\+/-/g; s/^-//; s/-$//'
+}
+
+# Chromium names an --app window chrome-<host>_<path>-Default, with / turned into _.
+window_class() {
+  local url=$1 address host path
+  address=${url#*://}
+  address=${address%%[?#]*}
+  host=${address%%/*}
+  path=${address:${#host}}
+  host=${host##*@}
+  host=${host%%:*}
+  printf 'chrome-%s_%s-Default' "${host,,}" "${path:-/}" | sed 's|/|_|g'
+}
+
+normalize_url() {
+  local url=$1
+  if [[ ! $url =~ ^[a-zA-Z][a-zA-Z0-9+.-]*: ]]; then
+    url="https://$url"
+  fi
+  printf '%s' "$url"
+}
+
+require_http_url() {
+  local url=$1
+  if [[ $url =~ [[:space:]] ]]; then
+    echo "webapp: URL must not contain whitespace" >&2
+    exit 1
+  fi
+  if [[ ! ${url,,} =~ ^https?:// ]]; then
+    echo "webapp: URL must be http or https" >&2
+    exit 1
+  fi
+}
+
+require_plain_name() {
+  if [[ -z $1 || $1 == */* || $1 == *$'\n'* || $1 == . || $1 == .. ]]; then
+    echo "webapp: invalid name: $1" >&2
+    exit 1
+  fi
+}
+
+# Desktop Entry string escaping. Backslash first, then tab, CR, and LF.
+desktop_escape() {
+  local value=$1
+  value=${value//\\/\\\\}
+  value=${value//$'\t'/\\t}
+  value=${value//$'\r'/\\r}
+  value=${value//$'\n'/\\n}
+  [[ $value == ' '* ]] && value="\\s${value# }"
+  printf '%s' "$value"
+}
+
+# One Exec argument. Inside quotes, \ " ` $ take a backslash and % becomes %%.
+exec_arg() {
+  local escaped
+  escaped=$(printf '%s' "$1" | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g' -e 's/`/\\`/g' -e 's/\$/\\$/g' -e 's/%/%%/g')
+  printf '"%s"' "$escaped"
+}
+
+download_icon() {
+  local url=$1 dest=$2
+  curl -fsSL --max-time 10 -o "$dest" "$url" 2>/dev/null &&
+    [[ -s $dest && $(file -b --mime-type "$dest") == image/png ]]
+}
+
+fetch_site_icon() {
+  local site_url=$1 dest=$2 origin page icon_url
+  origin=$(sed -E 's|^(https?://[^/]+).*|\1|' <<<"$site_url")
+  page=$(curl -fsSL --max-time 5 "$site_url" 2>/dev/null | head -c 100000 | tr '\n' ' ' || true)
+  icon_url=$(grep -oiE "<link[^>]*rel=[\"'][^\"']*apple-touch-icon[^\"']*[\"'][^>]*>" <<<"$page" |
+    grep -oiE "href=[\"'][^\"']+" | head -1 | sed -E "s/^href=[\"']//" || true)
+
+  case $icon_url in
+    http://* | https://*) ;;
+    //*) icon_url="https:$icon_url" ;;
+    /*) icon_url="$origin$icon_url" ;;
+    ?*) icon_url="$origin/$icon_url" ;;
+  esac
+
+  if [[ -n $icon_url ]] && download_icon "$icon_url" "$dest"; then
+    return 0
+  fi
+  if download_icon "$origin/apple-touch-icon.png" "$dest"; then
+    return 0
+  fi
+  download_icon "https://www.google.com/s2/favicons?domain=${site_url}&sz=256" "$dest"
+}
+
+refresh_icons() {
+  if [[ ! -f $icon_root/index.theme ]]; then
+    mkdir -p "$icon_root"
+    cat >"$icon_root/index.theme" <<'EOF'
+[Icon Theme]
+Name=Hicolor
+Comment=User icons
+Directories=256x256/apps
+
+[256x256/apps]
+Size=128
+Context=Applications
+Type=Scalable
+MinSize=16
+MaxSize=512
+EOF
+  fi
+  gtk-update-icon-cache -f "$icon_root" >/dev/null 2>&1 || true
+}
+
+add_webapp() {
+  local name=$1 url=$2 icon class exec_line desktop
+  require_plain_name "$name"
+  url=$(normalize_url "$url")
+  require_http_url "$url"
+  class=$(window_class "$url")
+  icon=$(icon_name "$name")
+  # Fuzzel rejects quotes that wrap only part of an argument, as in --app="url".
+  exec_line="chromium --ozone-platform-hint=wayland $(exec_arg "--app=$url")"
+
+  mkdir -p "$apps" "$icons"
+  desktop=$apps/$name.desktop
+  {
+    printf '%s\n' '[Desktop Entry]' 'Version=1.0'
+    printf 'Name=%s\n' "$(desktop_escape "$name")"
+    printf 'Comment=%s\n' "$(desktop_escape "$url")"
+    printf 'Exec=%s\n' "$(desktop_escape "$exec_line")"
+    printf '%s\n' 'Terminal=false' 'Type=Application' 'StartupNotify=true'
+    if fetch_site_icon "$url" "$icons/$icon.png"; then
+      printf 'Icon=%s\n' "$(desktop_escape "$icon")"
+      refresh_icons
+    else
+      rm -f "$icons/$icon.png"
+      echo "webapp: icon not found" >&2
+    fi
+    printf 'StartupWMClass=%s\n' "$(desktop_escape "$class")"
+  } >"$desktop"
+
+  update-desktop-database "$apps" >/dev/null 2>&1 || true
+  if ! command -v chromium >/dev/null; then
+    echo "webapp: chromium is not installed" >&2
+  fi
+  printf '%s\n' "$desktop"
+}
+
+remove_webapp() {
+  local name=$1 file icon
+  require_plain_name "$name"
+  file=$apps/$name.desktop
+  if [[ ! -f $file ]]; then
+    echo "webapp: no such app: $name" >&2
+    exit 1
+  fi
+  if ! grep -Eq '^Exec=chromium --ozone-platform-hint=wayland (--app=|"--app=)' "$file"; then
+    echo "webapp: $name is not a web app" >&2
+    exit 1
+  fi
+  icon=$(icon_name "$name")
+  rm -f "$file" "$icons/$icon.png"
+  update-desktop-database "$apps" >/dev/null 2>&1 || true
+  refresh_icons
+}
+
+case ${1:-} in
+  add)
+    [[ $# -eq 3 ]] || usage
+    add_webapp "$2" "$3"
+    ;;
+  remove)
+    [[ $# -eq 2 ]] || usage
+    remove_webapp "$2"
+    ;;
+  *) usage ;;
+esac
