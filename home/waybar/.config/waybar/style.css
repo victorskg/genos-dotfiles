@@ -152,7 +152,7 @@ button:hover {
 }
 
 #custom-power {
-    color: @accent;
+    color: @accent_bright;
 }
 
 #custom-media:hover,

@@ -5,19 +5,19 @@
 <title>GenOS preview</title>
 <style>
   :root { color-scheme: dark; }
-  body { margin: 0; background: #070606; color: #e4dcd2; font: 15px/1.4 Inter, sans-serif; }
+  body { margin: 0; background: #070606; color: #f3e6d6; font: 15px/1.4 Inter, sans-serif; }
   main { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; padding: 24px; }
   h1 { font-weight: 500; font-size: 15px; letter-spacing: 0.08em; text-transform: uppercase; margin: 0 0 12px; }
   section { background: #0b0909; border: 1px solid #2a2022; border-radius: 10px; padding: 16px; }
   .swatches { display: flex; gap: 8px; margin-bottom: 16px; }
   .swatches span { width: 28px; height: 28px; border-radius: 6px; display: block; }
-  .bar { display: flex; align-items: center; gap: 14px; height: 32px; padding: 0 12px; border-radius: 10px; background: rgba(22, 17, 18, 0.8); }
+  .bar { display: flex; align-items: center; gap: 14px; height: 32px; padding: 0 12px; border-radius: 10px; background: rgba(22, 17, 18, 0.92); }
   .pill { border-radius: 999px; padding: 2px 8px; }
   .win { margin-top: 12px; height: 72px; border-radius: 10px; border: 2px solid; background: #161112; }
   .term { margin-top: 12px; border-radius: 10px; overflow: hidden; }
   .term .paper { background: #f4f1ec; color: #221816; padding: 8px; font: 12px "JetBrains Mono", monospace; }
-  .term .glass { margin-top: -28px; padding: 8px; font: 12px "JetBrains Mono", monospace; background: rgba(11, 9, 9, 0.8); }
-  p { color: #b8aca6; font-size: 13px; }
+  .term .glass { margin-top: -28px; padding: 8px; font: 12px "JetBrains Mono", monospace; background: rgba(11, 9, 9, 0.92); color: #f3e6d6; }
+  p { color: #cdbeb4; font-size: 13px; }
 </style>
 </head>
 <body>
@@ -28,21 +28,21 @@
       <span style="background:#0b0909"></span>
       <span style="background:#161112"></span>
       <span style="background:#1f1819"></span>
-      <span style="background:#e4dcd2"></span>
-      <span style="background:#c1121f"></span>
-      <span style="background:#6d3fa0"></span>
-      <span style="background:#b8863b"></span>
+      <span style="background:#f3e6d6"></span>
+      <span style="background:#ce0d1b"></span>
+      <span style="background:#8839df"></span>
+      <span style="background:#f0b429"></span>
     </div>
     <div class="bar">
       <span>21:04</span>
-      <span class="pill" style="background:#c1121f;color:#e4dcd2">1</span>
-      <span style="color:#b8aca6">2</span>
+      <span class="pill" style="background:#ce0d1b;color:#f3e6d6">1</span>
+      <span style="color:#cdbeb4">2</span>
       <span style="margin-left:auto">42%</span>
     </div>
-    <div class="win" style="border-color:#c1121f"></div>
+    <div class="win" style="border-color:#ff3b45"></div>
     <div class="term">
       <div class="paper">texto claro atrás</div>
-      <div class="glass">terminal a 0.8</div>
+      <div class="glass">terminal a 0.92</div>
     </div>
   </section>
   <section>
@@ -51,24 +51,24 @@
       <span style="background:#0b0909"></span>
       <span style="background:#161112"></span>
       <span style="background:#1f1819"></span>
-      <span style="background:#e4dcd2"></span>
-      <span style="background:#6d3fa0"></span>
-      <span style="background:#c1121f"></span>
-      <span style="background:#b8863b"></span>
+      <span style="background:#f3e6d6"></span>
+      <span style="background:#8839df"></span>
+      <span style="background:#ce0d1b"></span>
+      <span style="background:#f0b429"></span>
     </div>
     <div class="bar">
       <span>21:04</span>
-      <span class="pill" style="background:#6d3fa0;color:#e4dcd2">1</span>
-      <span style="color:#b8aca6">2</span>
+      <span class="pill" style="background:#8839df;color:#f3e6d6">1</span>
+      <span style="color:#cdbeb4">2</span>
       <span style="margin-left:auto">42%</span>
     </div>
-    <div class="win" style="border-color:#6d3fa0"></div>
+    <div class="win" style="border-color:#c084fc"></div>
     <div class="term">
       <div class="paper">texto claro atrás</div>
-      <div class="glass">terminal a 0.8</div>
+      <div class="glass">terminal a 0.92</div>
     </div>
   </section>
 </main>
-<p style="padding:0 24px 24px">Texto #e4dcd2 sobre o carmesim #c1121f fica em 4.6:1. Sobre a barra a 0.8 com branco atrás, 7.4:1. O mudo #b8aca6 fica em 4.6:1 nesse pior caso. O cursor proposto é capitaine-cursors e o ícone é papirus-icon-theme, os dois no repositório extra. Nenhum está instalado.</p>
+<p style="padding:0 24px 24px">Texto #f3e6d6 sobre o carmesim #ce0d1b fica em 4.6:1. Sobre a barra a 0.92 com branco atrás, 12.5:1. O mudo #cdbeb4 fica em 8.5:1 nesse caso. A borda usa o acento claro #ff3b45. O cursor proposto é capitaine-cursors e o ícone é papirus-icon-theme, os dois no repositório extra. Nenhum está instalado.</p>
 </body>
 </html>

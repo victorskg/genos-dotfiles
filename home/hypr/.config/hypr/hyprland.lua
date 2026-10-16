@@ -17,7 +17,7 @@ hl.config({
         gaps_out = theme.gap_out,
         border_size = theme.border,
         col = {
-            active_border = theme.accent,
+            active_border = theme.accent_bright,
             inactive_border = theme.line,
         },
         layout = "dwindle",
@@ -35,7 +35,7 @@ hl.config({
             noise = theme.blur_noise,
             brightness = theme.blur_brightness,
             contrast = 1.0,
-            vibrancy = 0.0,
+            vibrancy = theme.blur_vibrancy,
             new_optimizations = true,
             xray = false,
             popups = true,

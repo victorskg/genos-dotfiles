@@ -26,7 +26,7 @@ for key in \
   blood blood_dim blood_bright violet violet_dim violet_bright gold steel \
   success warning error \
   opacity_terminal opacity_bar opacity_launcher opacity_notifications opacity_lock \
-  blur_size blur_passes blur_noise blur_brightness \
+  blur_size blur_passes blur_noise blur_brightness blur_vibrancy \
   gap_in gap_out border radius_window radius_popup bar_height bar_spacing \
   font_ui font_term font_lock \
   font_ui_family font_term_family font_lock_family font_icon_family
@@ -154,6 +154,7 @@ cat > "$root/home/hypr/.config/hypr/colors.conf" <<EOF
 \$blur_passes = ${val[blur_passes]}
 \$blur_noise = ${val[blur_noise]}
 \$blur_brightness = ${val[blur_brightness]}
+\$blur_vibrancy = ${val[blur_vibrancy]}
 \$opacity_lock = ${val[opacity_lock]}
 EOF
 
@@ -191,6 +192,7 @@ return {
   blur_passes = ${val[blur_passes]},
   blur_noise = ${val[blur_noise]},
   blur_brightness = ${val[blur_brightness]},
+  blur_vibrancy = ${val[blur_vibrancy]},
   opacity_lock = ${val[opacity_lock]},
 }
 EOF
@@ -211,11 +213,11 @@ text=$(hex fg)ff
 prompt=$(hex muted)ff
 placeholder=$(hex muted)ff
 input=$(hex fg)ff
-match=$(hex accent)ff
+match=$(hex accent_bright)ff
 selection=$(hex accent)ff
 selection-text=$(hex fg)ff
 selection-match=$(hex fg)ff
-border=$(hex accent)ff
+border=$(hex accent_bright)ff
 
 [border]
 width=${val[border]}
@@ -227,7 +229,7 @@ cat > "$root/home/mako/.config/mako/colors" <<EOF
 
 background-color=#$(hex surface)$(ahex opacity_notifications)
 text-color=#$(hex fg)
-border-color=#$(hex accent)
+border-color=#$(hex accent_bright)
 border-size=${val[border]}
 border-radius=${val[radius_popup]}
 font=${val[font_ui_family]} ${val[font_ui]}

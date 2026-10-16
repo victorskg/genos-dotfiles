@@ -81,6 +81,8 @@ The clock popup keeps the time, the date, and the calendar.
 
 ## Look
 
-The theme is defined in `home/theme/.config/genos/palette.conf`. `variant=blood` uses crimson for focus. `variant=eclipse` uses violet. Run `apply-theme`, then `hyprctl reload`. `apply-theme` writes `colors.lua` for Hyprland and `colors.conf` for hyprlock. UI type is Inter, the lock clock is EB Garamond, and GTK prefers the dark theme. Kitty keeps its own colors. `apply-theme` only sets Kitty `background_opacity` from `opacity_terminal`.
+The theme is defined in `home/theme/.config/genos/palette.conf`. `variant=blood` uses crimson for focus. `variant=eclipse` uses violet. Run `apply-theme`, then `hyprctl reload`. `apply-theme` writes `colors.lua` for Hyprland and `colors.conf` for hyprlock. UI type is Inter, the lock clock is EB Garamond, and GTK prefers the dark theme. Kitty keeps its own colors, matched to the palette background, foreground, and gold. `apply-theme` only sets Kitty `background_opacity` from `opacity_terminal`.
+
+The window border, the launcher border, and the power icon use the bright accent. Fills that carry foreground text keep the darker accent. Blur brightness is 1. `blur_vibrancy` keeps saturation in the glass.
 
 `~/.config/genos/opacity-mode` switches `opacity_mode` between `transparent` and `opaque`, regenerates the theme, and reloads Hyprland, Waybar, and Mako. Opaque mode turns blur off.
