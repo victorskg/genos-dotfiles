@@ -44,6 +44,36 @@ After installation, log in on a local TTY and run:
 start-hyprland
 ```
 
+## Theme
+
+Colors, gaps, radii, and opacity live in `home/theme/.config/genos/palette.conf`.
+
+```bash
+~/.config/genos/apply-theme
+hyprctl reload
+```
+
+Set `variant` to `blood` or `eclipse`. Set `opacity_mode` to `transparent` or `opaque`, or run `~/.config/genos/opacity-mode`. A preview of both variants is `home/theme/.config/genos/preview.html`.
+
+Kitty colors and the shell prompt are not generated. Only `background_opacity` is.
+
+Rollback to the pre-theme snapshot:
+
+```bash
+git checkout pre-ricing -- . && git switch main && ~/.config/genos/apply-theme && hyprctl reload
+```
+
+Wallpaper is the abyss color until a still image is chosen. Usable sources are a public-domain engraving, an original steel-and-ash texture, or a file placed in the theme directory. `swaybg` can show that file after it is approved. No packaged cursor or icon theme is installed. The candidates from the official repositories are `capitaine-cursors` and `papirus-icon-theme`.
+
+These official packages are not installed. Each one waits for its own approval:
+
+- `imv` for images
+- `mpv` for video
+- `zathura` for PDFs
+- `wl-clipboard` for the clipboard
+- `hyprpicker` for a color picker
+- `brightnessctl` for the laptop backlight
+
 ## Notes
 
 - Review `install.sh` before running it.

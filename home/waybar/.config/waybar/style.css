@@ -1,73 +1,177 @@
 @import "../genos/colors.css";
 @import "font.css";
+@import "surface.css";
 
 window#waybar {
-    background: transparent;
     border: none;
     color: @fg;
 }
 
+.modules-left,
+.modules-center,
+.modules-right {
+    margin: 0 8px;
+    padding: 0 10px;
+    border-radius: 14px;
+    border: 1px solid @line;
+    border-top-color: @gold;
+}
+
 .modules-left {
-    margin-left: 12px;
+    margin-left: 10px;
 }
 
 .modules-right {
-    margin-right: 12px;
+    margin-right: 10px;
 }
 
 menu {
     background: @surface;
-    border: none;
+    border: 1px solid @line;
+    border-top-color: @gold;
+    border-radius: 14px;
     color: @fg;
+    padding: 6px;
 }
 
 menuitem {
     color: @fg;
-    padding: 4px 12px;
+    padding: 6px 14px;
+    border-radius: 8px;
+}
+
+menuitem:hover {
+    background-color: @overlay;
+    color: @gold;
 }
 
 button,
-button:hover,
-#workspaces button,
-#workspaces button.urgent {
+button:hover {
     background: transparent;
     box-shadow: none;
     border: none;
-    color: @fg;
-    padding: 0 6px;
+    color: inherit;
+    padding: 0 4px;
     margin: 0;
 }
 
-#workspaces button {
-    margin-right: 12px;
+#workspaces > button,
+#workspaces > button.urgent {
+    font-family: "Symbols Nerd Font";
+    font-size: 11px;
+    color: @muted;
+    min-width: 16px;
+    padding: 0 8px;
+    margin: 2px 3px;
+    border-radius: 999px;
+    transition: color 150ms ease, background-color 150ms ease;
 }
 
-#workspaces button:last-child {
-    margin-right: 0;
+#workspaces > button:hover {
+    background-color: @overlay;
+    color: @gold;
 }
 
-#workspaces button.active,
-#workspaces button.visible {
+#workspaces > button.active,
+#workspaces > button.active:hover {
+    background-color: @accent;
+    color: @fg;
+}
+
+#workspaces button.taskbar-window,
+#workspaces button.taskbar-window.active,
+#workspaces button.taskbar-window:hover,
+#workspaces > button.active button.taskbar-window,
+#workspaces > button.active button.taskbar-window.active,
+#workspaces > button.active button.taskbar-window:hover {
+    margin: 0 0 0 6px;
+    padding: 0;
+    min-width: 16px;
+    min-height: 16px;
+    border: none;
+    border-radius: 0;
+    background: none;
     background-color: transparent;
-    box-shadow: inset 0 -3px @accent;
+    box-shadow: none;
+    color: inherit;
 }
 
-#bluetooth {
-    font-weight: normal;
+#clock {
+    font-family: "EB Garamond";
+    font-size: 17px;
+    padding: 0 6px;
 }
 
-#battery.warning {
+#custom-media,
+#cpu,
+#memory,
+#bluetooth,
+#network,
+#pulseaudio,
+#battery,
+#custom-power {
+    font-family: "Symbols Nerd Font";
+    font-size: 16px;
+    padding: 0 6px;
+    transition: color 150ms ease, background-color 150ms ease;
+}
+
+#custom-media.paused,
+#custom-media.stopped {
+    color: @muted;
+}
+
+#bluetooth.off,
+#bluetooth.disabled,
+#bluetooth.no-controller,
+#network.disconnected,
+#network.disabled {
+    color: @faint;
+}
+
+#pulseaudio.muted {
+    color: @steel;
+}
+
+#battery.charging,
+#battery.plugged,
+#battery.full {
+    color: @gold;
+}
+
+#cpu.warning,
+#memory.warning,
+#battery.warning:not(.charging) {
     color: @warning;
 }
 
-#battery.critical {
+#cpu.critical,
+#memory.critical,
+#battery.critical:not(.charging) {
     color: @danger;
+}
+
+#custom-power {
+    color: @accent;
+}
+
+#custom-media:hover,
+#cpu:hover,
+#memory:hover,
+#bluetooth:hover,
+#network:hover,
+#pulseaudio:hover,
+#battery:hover,
+#custom-power:hover,
+#clock:hover {
+    color: @gold;
 }
 
 tooltip {
     background: @surface;
-    border: none;
-    border-radius: 8px;
+    border: 1px solid @line;
+    border-top-color: @gold;
+    border-radius: 14px;
 }
 
 tooltip label {

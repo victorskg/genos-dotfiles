@@ -23,5 +23,11 @@ selection,
 treeview:selected,
 .view:selected {
     background-color: @accent;
-    color: @bg;
+    color: @fg;
+}
+
+button:hover,
+row:hover,
+.view:hover {
+    background-color: @overlay;
 }

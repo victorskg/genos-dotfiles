@@ -1,0 +1,11 @@
+#!/bin/sh
+dir="${XDG_PICTURES_DIR:-$HOME/Pictures}"
+mkdir -p "$dir"
+file="$dir/$(date +%Y-%m-%d-%H%M%S).png"
+if [ "$1" = region ]; then
+  geometry=$(slurp) || exit
+  grim -g "$geometry" "$file"
+else
+  grim "$file"
+fi
+notify-send "Screenshot" "$file"

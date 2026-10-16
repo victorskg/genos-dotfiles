@@ -21,6 +21,9 @@ packages=(
   pipewire
   pipewire-pulse
   wireplumber
+  playerctl
+  grim
+  slurp
   sof-firmware
   upower
   bluez
@@ -108,7 +111,7 @@ for package in "${stow_packages[@]}"; do
   fi
 done
 
-echo "==> Applying Cinder theme"
+echo "==> Applying the GenOS theme"
 "$DOTFILES_DIR/home/theme/.config/genos/apply-theme"
 
 echo "==> Building waybar popups"

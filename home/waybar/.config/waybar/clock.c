@@ -70,37 +70,18 @@ static char *zone_name(void) {
     return path;
 }
 
-static void format_offset(const char *raw, char *out, size_t out_len) {
-    if (strlen(raw) == 5)
-        snprintf(out, out_len, "%c%c%c:%c%c", raw[0], raw[1], raw[2], raw[3], raw[4]);
-    else
-        snprintf(out, out_len, "%s", raw);
-}
-
 static gboolean refresh(gpointer data) {
     GtkLabel **labels = data;
     time_t now = time(NULL);
     struct tm local_tm;
-    struct tm utc_tm;
-    char clock_s[16], date_s[64], zone_s[32], raw_off[16], offset[16], utc_s[16];
-    char week[8], yday[8], meta[256];
+    char clock_s[16], date_s[64];
 
     localtime_r(&now, &local_tm);
-    gmtime_r(&now, &utc_tm);
     strftime(clock_s, sizeof clock_s, "%H:%M:%S", &local_tm);
     strftime(date_s, sizeof date_s, "%A, %d %B %Y", &local_tm);
-    strftime(zone_s, sizeof zone_s, "%Z", &local_tm);
-    strftime(raw_off, sizeof raw_off, "%z", &local_tm);
-    strftime(utc_s, sizeof utc_s, "%H:%M:%S", &utc_tm);
-    strftime(week, sizeof week, "%V", &local_tm);
-    strftime(yday, sizeof yday, "%-j", &local_tm);
-    format_offset(raw_off, offset, sizeof offset);
-    snprintf(meta, sizeof meta, "%s\n%s  %s\nUTC  %s\nWeek %s   Day %s",
-             (const char *)g_object_get_data(G_OBJECT(labels[0]), "iana"), zone_s, offset,
-             utc_s, week, yday);
     gtk_label_set_text(labels[0], clock_s);
     gtk_label_set_text(labels[1], date_s);
-    gtk_label_set_text(labels[2], meta);
+    gtk_label_set_text(labels[2], g_object_get_data(G_OBJECT(labels[0]), "iana"));
     return G_SOURCE_CONTINUE;
 }
 
@@ -156,7 +137,8 @@ int main(void) {
     gtk_widget_set_margin_top(panel, 36);
     gtk_widget_set_margin_start(panel, 12);
 
-    box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 8);
+    box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+    gtk_widget_set_name(box, "stack");
     iana = zone_name();
     for (int i = 0; i < 3; i++) {
         labels[i] = GTK_LABEL(gtk_label_new(""));

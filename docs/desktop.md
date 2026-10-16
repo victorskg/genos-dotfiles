@@ -23,6 +23,8 @@ Layout is dwindle. Keyboard layout is Brazilian ABNT2. New windows open on an em
 | Super+Comma / Super+Period | Previous / next workspace |
 | Super+Shift+1 … Super+Shift+0 | Move the window to that workspace |
 | Super+Shift+Comma / Super+Shift+Period | Move the window to the previous / next workspace |
+| Print | Save a screenshot of every output to `~/Pictures` |
+| Shift+Print | Save a selected region to `~/Pictures` |
 | Super+Shift+Left | Move the window to `eDP-1` |
 | Super+Shift+Right | Move the window to `HDMI-A-1` |
 
@@ -41,16 +43,34 @@ Closing the last window on a numbered workspace closes the gap. Higher occupied 
 
 ## Bar
 
-Waybar sits on top. Left to right: clock, workspaces, Bluetooth, network, volume, battery, power.
+Waybar sits at the top as three frosted groups: the clock, workspaces, and the status cluster. Its top margin matches `gap_out` (12). Each group has a gilt top edge. The active workspace is a pill in the theme accent.
 
-- Clock, Wi-Fi, and volume open their own popups.
-- Bluetooth opens `bluetui` in Kitty.
-- Power offers Lock (`hyprlock`), Restart, and Power off.
+The bar shows icons from Symbols Nerd Font. Names, percentages, and titles appear in the tooltip. The clock shows only the time, in EB Garamond. Its tooltip is Waybar's calendar. Scroll moves the month. Right click switches between month and year.
+
+Each occupied workspace is a circle. The focused window's icon sits inside that workspace. Empty workspaces stay hidden. Names matching `ext-*` stay hidden.
+
+The status cluster, from left to right, is media, CPU, memory, Bluetooth, network, volume, battery, and power.
+
+- Media shows play or pause. The tooltip is the artist and the title. Left click toggles playback through `playerctl`. Right click skips to the next track. The module is absent when no player is running. Paused media uses the muted color.
+- CPU and memory show an icon. The tooltip is the percentage. Warning starts at 70 and critical at 90.
+- Wi-Fi shows signal strength. Ethernet and a disconnected radio use their own icons. The tooltip is the network name. Click opens the Wi-Fi popup.
+- Bluetooth shows one icon. The tooltip lists the connected device. Off and disabled use the faint color. Click opens `bluetui` in Kitty.
+- Volume shows a level icon, or a mute icon in steel. The tooltip is the percentage. Scroll changes the volume. Click opens the volume popup.
+- Battery shows a level icon. The tooltip is the capacity and the remaining time. Charging uses gold. Warning starts at 30 and critical at 15.
+- Power is a power icon in the accent color. It offers Lock (`hyprlock`), Restart, and Power off.
+
+The Wi-Fi popup has no title. When a network is active, an arrow and its name sit on one row with refresh, disconnect, and the radio switch. Networks appear in a grid of three. Each tile shows the signal icon, then the name and, when the network is locked, a lock, both centered. The connected network's name is bold. A tile gains a border on hover. The connected tile uses the accent color. The tooltip shows the full network name and, on the next line, the signal percentage. Both lines are centered. The password field and the error text appear only when needed. Refresh, disconnect, and connect are icons. Their names are tooltips.
+
+The volume popup has an output group and an input group. Each group shows a short label, the mute icon, the slider, and the percentage. Devices stay in a list. The active device name is bold and its row uses the accent color. A row gains a border on hover. The tooltip is the full device name, centered. Mute is an icon that follows the mute state.
+
+The clock popup keeps the time, the date, and the calendar.
 
 ## Lock screen
 
-`hyprlock` shows the time in EB Garamond over a blurred screenshot and asks for the password.
+`hyprlock` shows the time in EB Garamond over a darkened, blurred screenshot and asks for the password.
 
 ## Look
 
-The theme is Cinder, defined in `palette.conf`. UI type is Inter, the terminal is JetBrains Mono, and the lock clock is EB Garamond. GTK prefers the dark theme.
+The theme is defined in `home/theme/.config/genos/palette.conf`. `variant=blood` uses crimson for focus. `variant=eclipse` uses violet. Run `apply-theme`, then `hyprctl reload`. UI type is Inter, the lock clock is EB Garamond, and GTK prefers the dark theme. Kitty keeps its own colors. `apply-theme` only sets Kitty `background_opacity` from `opacity_terminal`.
+
+`~/.config/genos/opacity-mode` switches `opacity_mode` between `transparent` and `opaque`, regenerates the theme, and reloads Hyprland, Waybar, and Mako. Opaque mode turns blur off.

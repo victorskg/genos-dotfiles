@@ -163,16 +163,36 @@ static void clear_list(GtkWidget *list) {
     g_list_free(children);
 }
 
+static gboolean row_tip(GtkWidget *widget, gint x, gint y, gboolean keyboard, GtkTooltip *tooltip, gpointer data) {
+    GtkWidget *label = gtk_label_new(g_object_get_data(G_OBJECT(widget), "tip"));
+    (void)x;
+    (void)y;
+    (void)keyboard;
+    (void)data;
+    gtk_widget_set_name(label, "tip");
+    gtk_label_set_justify(GTK_LABEL(label), GTK_JUSTIFY_CENTER);
+    gtk_label_set_xalign(GTK_LABEL(label), 0.5);
+    gtk_widget_set_halign(label, GTK_ALIGN_CENTER);
+    gtk_tooltip_set_custom(tooltip, label);
+    return TRUE;
+}
+
 static GtkWidget *node_row(const Node *node) {
     GtkWidget *row = gtk_list_box_row_new();
+    GtkWidget *item = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
     GtkWidget *label = gtk_label_new(node->name);
-    gtk_widget_set_name(label, "ssid");
+    gtk_widget_set_name(item, "item");
+    gtk_widget_set_name(label, "name");
     gtk_label_set_xalign(GTK_LABEL(label), 0);
     gtk_label_set_ellipsize(GTK_LABEL(label), PANGO_ELLIPSIZE_END);
     gtk_label_set_max_width_chars(GTK_LABEL(label), 28);
-    gtk_container_add(GTK_CONTAINER(row), label);
+    gtk_box_pack_start(GTK_BOX(item), label, TRUE, TRUE, 0);
+    gtk_container_add(GTK_CONTAINER(row), item);
     if (node->is_default) gtk_style_context_add_class(gtk_widget_get_style_context(row), "current");
     g_object_set_data(G_OBJECT(row), "id", GINT_TO_POINTER(node->id));
+    g_object_set_data_full(G_OBJECT(row), "tip", g_strdup(node->name), g_free);
+    gtk_widget_set_has_tooltip(row, TRUE);
+    g_signal_connect(row, "query-tooltip", G_CALLBACK(row_tip), NULL);
     return row;
 }
 
@@ -205,7 +225,11 @@ static void refresh_group(Group *group, const char *status) {
     }
     g_free(err);
     g_free(volume);
-    gtk_button_set_label(GTK_BUTTON(group->mute), muted ? "Unmute" : "Mute");
+    gtk_button_set_label(GTK_BUTTON(group->mute), muted ? "\xF3\xB0\x96\x81" : "\xF3\xB0\x95\xBE");
+    gtk_widget_set_name(gtk_bin_get_child(GTK_BIN(group->mute)), "glyph");
+    gtk_widget_set_tooltip_text(group->mute, muted ? "Unmute" : "Mute");
+    if (muted) gtk_style_context_add_class(gtk_widget_get_style_context(group->mute), "muted");
+    else gtk_style_context_remove_class(gtk_widget_get_style_context(group->mute), "muted");
     if (group->volume_id == 0) {
         group->updating = 1;
         gtk_range_set_value(GTK_RANGE(group->scale), percent);
@@ -385,21 +409,28 @@ static void hold_lock(void) {
     _exit(0);
 }
 
-static GtkWidget *flat_button(const char *label) {
-    GtkWidget *button = gtk_button_new_with_label(label);
+static GtkWidget *flat_button(const char *icon, const char *tip) {
+    GtkWidget *button = gtk_button_new_with_label(icon);
     gtk_button_set_relief(GTK_BUTTON(button), GTK_RELIEF_NONE);
+    gtk_widget_set_name(gtk_bin_get_child(GTK_BIN(button)), "glyph");
+    gtk_widget_set_tooltip_text(button, tip);
     return button;
 }
 
 static void build_group(GtkWidget *box, Group *group) {
-    GtkWidget *header = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 8);
+    GtkWidget *group_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+    GtkWidget *header = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
     GtkWidget *title = gtk_label_new(group->title);
-    GtkWidget *volume_row = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 8);
+    GtkWidget *volume_row = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
     GtkWidget *scroll = gtk_scrolled_window_new(NULL, NULL);
 
+    gtk_widget_set_name(group_box, "group");
+    gtk_widget_set_name(header, "header");
+    gtk_widget_set_name(volume_row, "volume");
+    gtk_widget_set_name(scroll, "list-wrap");
     gtk_widget_set_name(title, "title");
     gtk_label_set_xalign(GTK_LABEL(title), 0);
-    group->mute = flat_button("Mute");
+    group->mute = flat_button("\xF3\xB0\x95\xBE", "Mute");
     gtk_box_pack_start(GTK_BOX(header), title, TRUE, TRUE, 0);
     gtk_box_pack_end(GTK_BOX(header), group->mute, FALSE, FALSE, 0);
 
@@ -424,9 +455,10 @@ static void build_group(GtkWidget *box, Group *group) {
     gtk_list_box_set_activate_on_single_click(GTK_LIST_BOX(group->list), TRUE);
     gtk_container_add(GTK_CONTAINER(scroll), group->list);
 
-    gtk_box_pack_start(GTK_BOX(box), header, FALSE, FALSE, 0);
-    gtk_box_pack_start(GTK_BOX(box), volume_row, FALSE, FALSE, 0);
-    gtk_box_pack_start(GTK_BOX(box), scroll, FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(group_box), header, FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(group_box), volume_row, FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(group_box), scroll, FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(box), group_box, FALSE, FALSE, 0);
 
     g_signal_connect(group->scale, "value-changed", G_CALLBACK(on_scale), group);
     g_signal_connect(group->mute, "clicked", G_CALLBACK(on_mute), group);
@@ -492,7 +524,8 @@ int main(void) {
     gtk_widget_set_size_request(panel, 300, -1);
     place_panel(window, panel);
 
-    box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 8);
+    box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+    gtk_widget_set_name(box, "stack");
     build_group(box, &output);
     build_group(box, &input);
     error_label = gtk_label_new("");
