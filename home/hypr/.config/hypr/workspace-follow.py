@@ -47,6 +47,10 @@ def batch(cmds):
         call("[[BATCH]]" + ";".join(cmds))
 
 
+def dsp(expr):
+    return f"dispatch {expr}"
+
+
 def claim():
     pidfile = runtime / "hypr-workspace-follow.pid"
     if pidfile.exists():
@@ -124,14 +128,16 @@ def follow(ws_id):
     if not need_move and laptop_ws == side:
         return
     cmds = []
-    if need_move:
-        cmds.append(f"dispatch moveworkspacetomonitor {ws_id} {external_name}")
-        place[ws_id] = external_name
-    if laptop_ws != side:
-        cmds.append(f"dispatch focusmonitor {laptop_name}")
-        cmds.append(f"dispatch workspace name:{side}")
-        cmds.append(f"dispatch focusmonitor {external_name}")
+    switched = laptop_ws != side
+    if switched:
+        cmds.append(dsp(f'hl.dsp.focus({{ monitor = "{laptop_name}" }})'))
+        cmds.append(dsp(f'hl.dsp.focus({{ workspace = "name:{side}" }})'))
         laptop_ws = side
+    if need_move:
+        cmds.append(dsp(f'hl.dsp.workspace.move({{ workspace = "{ws_id}", monitor = "{external_name}" }})'))
+        place[ws_id] = external_name
+    if switched:
+        cmds.append(dsp(f'hl.dsp.focus({{ monitor = "{external_name}" }})'))
     batch(cmds)
 
 
@@ -139,7 +145,7 @@ def pull_to_external():
     cmds = []
     for ws in query("j/workspaces"):
         if ws["id"] > 0 and ws["monitor"] != external_name:
-            cmds.append(f"dispatch moveworkspacetomonitor {ws['id']} {external_name}")
+            cmds.append(dsp(f'hl.dsp.workspace.move({{ workspace = "{ws["id"]}", monitor = "{external_name}" }})'))
             place[ws["id"]] = external_name
     batch(cmds)
 
@@ -153,9 +159,9 @@ def undock():
         suffix = name.removeprefix(EXT)
         if suffix.isdigit():
             address = client["address"]
-            cmds.append(f"dispatch movetoworkspacesilent {suffix},address:{address}")
+            cmds.append(dsp(f'hl.dsp.window.move({{ workspace = "{suffix}", follow = false, window = "address:{address}" }})'))
     if last_main:
-        cmds.append(f"dispatch workspace {last_main}")
+        cmds.append(dsp(f'hl.dsp.focus({{ workspace = "{last_main}" }})'))
     batch(cmds)
 
 
@@ -211,13 +217,13 @@ def fill_gap(closed_id):
                 if dest == ws_id:
                     continue
                 addr = client["address"]
-                cmds.append(f"dispatch movetoworkspacesilent {dest},address:{addr}")
+                cmds.append(dsp(f'hl.dsp.window.move({{ workspace = "{dest}", follow = false, window = "address:{addr}" }})'))
                 where[norm_addr(addr)] = dest
-        cmds.append(f"dispatch workspace {closed_id}")
+        cmds.append(dsp(f'hl.dsp.focus({{ workspace = "{closed_id}" }})'))
     else:
         lower = [ws_id for ws_id in groups if ws_id < closed_id]
         if lower:
-            cmds.append(f"dispatch workspace {max(lower)}")
+            cmds.append(dsp(f'hl.dsp.focus({{ workspace = "{max(lower)}" }})'))
     batch(cmds)
 
 
