@@ -229,13 +229,15 @@ cat > "$root/home/mako/.config/mako/colors" <<EOF
 
 background-color=#$(hex surface)$(ahex opacity_notifications)
 text-color=#$(hex fg)
-border-color=#$(hex accent_bright)
-border-size=${val[border]}
+border-color=#$(hex gold)
 border-radius=${val[radius_popup]}
-font=${val[font_ui_family]} ${val[font_ui]}
-padding=12
-width=380
-default-timeout=5000
+progress-color=over #$(hex accent)ff
+font=${val[font_ui_family]} 11
+format=<span foreground="#$(hex gold)" weight="bold">%s</span>  <span foreground="#$(hex faint)">%b</span>
+
+[urgency=critical]
+border-color=#$(hex accent_bright)
+default-timeout=0
 EOF
 
 cat > "$root/home/waybar/.config/waybar/font.css" <<EOF

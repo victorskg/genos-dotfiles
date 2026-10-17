@@ -75,6 +75,12 @@ The volume popup has an output group and an input group. Each group shows a shor
 
 The clock popup keeps the time, the date, and the calendar.
 
+## Notifications
+
+Mako draws a slip at the top right, 200 px wide and at most 36 px tall. The title is gold, the body is faint, and both sit on one line. The frame is a 1 px gold line. Every corner uses `radius_popup`. The icon is 12 px. The slip closes after 5 seconds. A critical notification takes the bright border and stays until it is closed.
+
+Left click runs the default action when the sending program defined one, then closes the card. A notification with no action only closes. Right click closes it.
+
 ## Lock screen
 
 `hyprlock` shows the time in EB Garamond over a darkened, blurred screenshot and asks for the password.
@@ -85,6 +91,6 @@ The theme is defined in `home/theme/.config/genos/palette.conf`. `variant=blood`
 
 The window border, the launcher border, and the power icon use the bright accent. Fills that carry foreground text keep the darker accent. Blur brightness is 1. `blur_vibrancy` keeps saturation in the glass.
 
-Window corners are `radius_window` (6). Notifications are `radius_popup` (10). Bar groups are 10. The clock popup is 12, and the Wi-Fi and volume popups are 8. Workspace pills stay circles.
+Window corners are `radius_window` (6). Bar groups and notifications are `radius_popup` (10). The clock popup is 12, and the Wi-Fi and volume popups are 8. Workspace pills stay circles.
 
 `~/.config/genos/opacity-mode` switches `opacity_mode` between `transparent` and `opaque`, regenerates the theme, and reloads Hyprland, Waybar, and Mako. Opaque mode turns blur off.

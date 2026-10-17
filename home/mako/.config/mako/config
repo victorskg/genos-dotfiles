@@ -1,1 +1,17 @@
 include=~/.config/mako/colors
+
+width=200
+height=36
+padding=3,8
+border-size=1
+markup=1
+max-icon-size=12
+icon-border-radius=2
+margin=6
+outer-margin=8
+default-timeout=5000
+max-visible=3
+anchor=top-right
+
+on-button-left=invoke-default-action
+on-button-right=dismiss

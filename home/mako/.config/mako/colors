@@ -2,10 +2,12 @@
 
 background-color=#161112f0
 text-color=#f3e6d6
-border-color=#ff3b45
-border-size=2
+border-color=#f0b429
 border-radius=10
-font=Inter 15
-padding=12
-width=380
-default-timeout=5000
+progress-color=over #ce0d1bff
+font=Inter 11
+format=<span foreground="#f0b429" weight="bold">%s</span>  <span foreground="#9a8e88">%b</span>
+
+[urgency=critical]
+border-color=#ff3b45
+default-timeout=0
