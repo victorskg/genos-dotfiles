@@ -4,7 +4,7 @@ Expected behavior of the GenOS session. `$mod` is Super.
 
 ## Session
 
-`greetd` owns TTY 1 and draws the GenOS login screen with ReGreet inside Hyprland, started through `start-hyprland`. The login Hyprland reads `/etc/greetd/hyprland.lua`. The keyboard is ABNT2. After a successful login, the only session is Hyprland through `start-hyprland`, which reads `~/.config/hypr/hyprland.lua`. That session launches Waybar, Mako, the polkit agent, and `workspace-follow.py`. Reloading the config restarts the workspace follower. If the login screen fails, another TTY is still available with Ctrl+Alt+F2.
+`greetd` owns TTY 1 and draws the GenOS login screen with ReGreet inside Hyprland, started through `start-hyprland`. The login Hyprland reads `/etc/greetd/hyprland.lua`. The keyboard is ABNT2. After a successful login, the only session is Hyprland through `start-hyprland`, which reads `~/.config/hypr/hyprland.lua`. That session launches Waybar, Mako, the polkit agent, `workspace-follow.py`, and `wallpaper show`. Reloading the config restarts the workspace follower. If the login screen fails, another TTY is still available with Ctrl+Alt+F2.
 
 Layout is dwindle. Keyboard layout is Brazilian ABNT2. New windows open on an empty workspace (`open-alone`).
 
@@ -25,6 +25,8 @@ Layout is dwindle. Keyboard layout is Brazilian ABNT2. New windows open on an em
 | Super+Shift+Comma / Super+Shift+Period | Move the window to the previous / next workspace |
 | Print | Save a screenshot of every output to `~/Pictures` |
 | Shift+Print | Save a selected region to `~/Pictures` |
+| Super+W | Next wallpaper |
+| Super+Shift+W | Previous wallpaper |
 | Super+Shift+Left | Move the window to `eDP-1` |
 | Super+Shift+Right | Move the window to `HDMI-A-1` |
 
@@ -86,6 +88,8 @@ Left click runs the default action when the sending program defined one, then cl
 `hyprlock` shows the time in EB Garamond over a darkened, blurred screenshot and asks for the password.
 
 ## Look
+
+Still wallpapers live in `~/.local/share/genos/wallpapers`. `swaybg` draws the file linked from `~/.local/state/genos/wallpaper`, scaled and cropped to fill each output. Super+W cycles forward. Super+Shift+W cycles backward. With no image, the desktop stays the abyss color. The login screen does not draw a wallpaper. See `docs/wallpaper.md`.
 
 The theme is defined in `home/theme/.config/genos/palette.conf`. `variant=blood` uses crimson for focus. `variant=eclipse` uses violet. Run `apply-theme`, then `hyprctl reload`. `apply-theme` writes `colors.lua` for Hyprland and `colors.conf` for hyprlock. UI type is Inter, the lock clock is EB Garamond, and GTK prefers the dark theme. Kitty keeps its own colors, matched to the palette background, foreground, and gold. `apply-theme` only sets Kitty `background_opacity` from `opacity_terminal`.
 

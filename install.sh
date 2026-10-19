@@ -28,6 +28,7 @@ packages=(
   playerctl
   grim
   slurp
+  swaybg
   sof-firmware
   upower
   bluez
@@ -148,6 +149,8 @@ cd "$DOTFILES_DIR"
 for package in "${stow_packages[@]}"; do
   stow --no-folding --target="$HOME" --dir=home "$package"
 done
+
+ln -sfn "$HOME/.config/hypr/wallpaper" "$HOME/.local/bin/wallpaper"
 
 fc-cache -f
 

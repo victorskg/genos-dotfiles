@@ -60,7 +60,7 @@ Rollback to the pre-theme snapshot:
 git checkout pre-ricing -- . && git switch main && ~/.config/genos/apply-theme && hyprctl reload
 ```
 
-Wallpaper is the abyss color until a still image is chosen. Usable sources are a public-domain engraving, an original steel-and-ash texture, or a file placed in the theme directory. `swaybg` can show that file after it is approved. No packaged cursor or icon theme is installed. The candidates from the official repositories are `capitaine-cursors` and `papirus-icon-theme`.
+Still wallpapers are files in `~/.local/share/genos/wallpapers`. `swaybg` shows the current one. See `docs/wallpaper.md`. No packaged cursor or icon theme is installed. The candidates from the official repositories are `capitaine-cursors` and `papirus-icon-theme`.
 
 These official packages are not installed. Each one waits for its own approval:
 

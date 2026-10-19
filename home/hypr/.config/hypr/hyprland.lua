@@ -107,6 +107,8 @@ hl.bind(mod .. " + SHIFT + period", hl.dsp.window.move({ workspace = "r+1" }))
 
 hl.bind("Print", hl.dsp.exec_cmd(home .. "/.config/hypr/screenshot"))
 hl.bind("SHIFT + Print", hl.dsp.exec_cmd(home .. "/.config/hypr/screenshot region"))
+hl.bind(mod .. " + W", hl.dsp.exec_cmd(home .. "/.config/hypr/wallpaper next"))
+hl.bind(mod .. " + SHIFT + W", hl.dsp.exec_cmd(home .. "/.config/hypr/wallpaper prev"))
 
 hl.bind(mod .. " + SHIFT + left", hl.dsp.window.move({ monitor = "eDP-1" }))
 hl.bind(mod .. " + SHIFT + right", hl.dsp.window.move({ monitor = "HDMI-A-1" }))
@@ -116,6 +118,7 @@ hl.on("hyprland.start", function()
     hl.exec_cmd("mako")
     hl.exec_cmd("/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1")
     hl.exec_cmd(home .. "/.config/hypr/workspace-follow.py")
+    hl.exec_cmd(home .. "/.config/hypr/wallpaper show")
 end)
 
 hl.on("config.reloaded", function()

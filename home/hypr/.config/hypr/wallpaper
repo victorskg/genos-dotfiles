@@ -1,0 +1,131 @@
+#!/bin/bash
+set -euo pipefail
+
+dir="${XDG_DATA_HOME:-$HOME/.local/share}/genos/wallpapers"
+state="${XDG_STATE_HOME:-$HOME/.local/state}/genos"
+link="$state/wallpaper"
+
+mkdir -p "$dir" "$state"
+
+mapfile -d '' files < <(find "$dir" -maxdepth 1 -type f \
+  \( -iname '*.png' -o -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.webp' \) \
+  -print0 | sort -z)
+
+usage() {
+  echo "usage: wallpaper [next|prev|show|list|add FILE|set FILE]" >&2
+  exit 1
+}
+
+apply() {
+  local target
+  target=$(readlink -f "$link" 2>/dev/null || true)
+  [[ -f $target ]] || return 0
+  if pgrep -x swaybg >/dev/null 2>&1; then
+    pkill -x swaybg || true
+    local i
+    for i in 1 2 3 4 5 6 7 8 9 10; do
+      pgrep -x swaybg >/dev/null 2>&1 || break
+      sleep 0.05
+    done
+  fi
+  if ! command -v swaybg >/dev/null 2>&1; then
+    echo "swaybg is not installed" >&2
+    notify-send "Wallpaper" "swaybg is not installed" || true
+    return 1
+  fi
+  setsid -f swaybg -i "$target" -m fill >/dev/null 2>&1
+}
+
+choose() {
+  ln -sfn "$1" "$link"
+  apply
+  notify-send "Wallpaper" "$(basename "$1")" || true
+}
+
+index_of() {
+  local i
+  for i in "${!files[@]}"; do
+    if [[ $(readlink -f "${files[$i]}") == "$1" ]]; then
+      echo "$i"
+      return
+    fi
+  done
+  echo -1
+}
+
+need_files() {
+  if ((${#files[@]} == 0)); then
+    notify-send "Wallpaper" "No images in $dir" || true
+    exit 0
+  fi
+}
+
+step() {
+  local current idx
+  need_files
+  current=$(readlink -f "$link" 2>/dev/null || true)
+  idx=$(index_of "$current")
+  if [[ $1 == next ]]; then
+    if [[ $idx -lt 0 ]]; then
+      idx=0
+    else
+      idx=$(((idx + 1) % ${#files[@]}))
+    fi
+  elif [[ $idx -le 0 ]]; then
+    idx=$((${#files[@]} - 1))
+  else
+    idx=$((idx - 1))
+  fi
+  choose "${files[$idx]}"
+}
+
+copy_in() {
+  local src base dest
+  [[ $# -eq 1 && -n $1 ]] || usage
+  src=$(readlink -f "$1")
+  [[ -f $src ]] || {
+    echo "not a file: $1" >&2
+    exit 1
+  }
+  base=$(basename "$src")
+  case ${base,,} in
+    *.png | *.jpg | *.jpeg | *.webp) ;;
+    *)
+      echo "unsupported image: $base" >&2
+      exit 1
+      ;;
+  esac
+  dest="$dir/$base"
+  if [[ $src != "$dest" ]]; then
+    cp -f "$src" "$dest"
+  fi
+  printf '%s\n' "$dest"
+}
+
+cmd=${1:-next}
+case $cmd in
+  next | prev) step "$cmd" ;;
+  show)
+    if [[ ! -f $link ]] && ((${#files[@]} > 0)); then
+      ln -sfn "${files[0]}" "$link"
+    fi
+    apply
+    ;;
+  list)
+    current=$(readlink -f "$link" 2>/dev/null || true)
+    for file in "${files[@]}"; do
+      mark=" "
+      [[ $(readlink -f "$file") == "$current" ]] && mark="*"
+      printf '%s %s\n' "$mark" "$(basename "$file")"
+    done
+    ;;
+  add) copy_in "${2:-}" ;;
+  set)
+    dest=$(copy_in "${2:-}")
+    mapfile -d '' files < <(find "$dir" -maxdepth 1 -type f \
+      \( -iname '*.png' -o -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.webp' \) \
+      -print0 | sort -z)
+    choose "$dest"
+    ;;
+  *) usage ;;
+esac
