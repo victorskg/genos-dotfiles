@@ -527,34 +527,6 @@ static GtkWidget *net_row(const Net *net) {
     return row;
 }
 
-static gboolean reveal_row(gpointer data) {
-    GtkWidget *row = g_weak_ref_get(data);
-
-    if (row != NULL) {
-        gtk_style_context_add_class(gtk_widget_get_style_context(row), "in");
-        g_object_unref(row);
-    }
-    return G_SOURCE_REMOVE;
-}
-
-static void free_weak(gpointer data) {
-    g_weak_ref_clear(data);
-    g_free(data);
-}
-
-/* Rows start hidden and fade in one after another. */
-static void cascade_rows(void) {
-    GList *rows = gtk_container_get_children(GTK_CONTAINER(app.list));
-    guint delay = 20;
-
-    for (GList *item = rows; item != NULL; item = item->next, delay += 40) {
-        GWeakRef *ref = g_new0(GWeakRef, 1);
-        g_weak_ref_init(ref, item->data);
-        g_timeout_add_full(G_PRIORITY_DEFAULT, delay, reveal_row, ref, free_weak);
-    }
-    g_list_free(rows);
-}
-
 static void set_caption(const char *text, int live) {
     GtkStyleContext *ctx = gtk_widget_get_style_context(app.status);
 
@@ -577,7 +549,7 @@ static void fill_list(const Result *r) {
     gtk_widget_show(app.scroll);
     for (int i = 0; i < r->nnets; i++) gtk_container_add(GTK_CONTAINER(app.list), net_row(&r->nets[i]));
     gtk_widget_show_all(app.list);
-    cascade_rows();
+    popup_cascade(app.list);
     if (r->nnets == 0) {
         set_caption("No networks found", 0);
         return;
@@ -810,7 +782,7 @@ int main(void) {
     backdrop = gtk_event_box_new();
     panel = gtk_event_box_new();
     gtk_widget_set_name(panel, "panel");
-    gtk_widget_set_size_request(panel, 340, -1);
+    gtk_widget_set_size_request(panel, 310, -1);
     popup_place(GTK_WINDOW(window), panel);
     popup_animate(panel);
 
@@ -840,7 +812,7 @@ int main(void) {
     app.scroll = gtk_scrolled_window_new(NULL, NULL);
     gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(app.scroll), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
     gtk_scrolled_window_set_propagate_natural_height(GTK_SCROLLED_WINDOW(app.scroll), TRUE);
-    gtk_scrolled_window_set_max_content_height(GTK_SCROLLED_WINDOW(app.scroll), 360);
+    gtk_scrolled_window_set_max_content_height(GTK_SCROLLED_WINDOW(app.scroll), 330);
     gtk_widget_set_name(app.scroll, "list-wrap");
     app.list = gtk_list_box_new();
     gtk_list_box_set_selection_mode(GTK_LIST_BOX(app.list), GTK_SELECTION_NONE);

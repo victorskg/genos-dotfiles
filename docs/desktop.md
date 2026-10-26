@@ -60,7 +60,7 @@ Closing the last window on a numbered workspace closes the gap. Higher occupied 
 
 ## Bar
 
-Waybar is a vertical island on the left edge, 52 px wide and fully rounded, floating `bar_margin` (12) from the screen. It has three sections: workspaces at the top, the clock (hours over minutes) in the middle, and the status cluster at the bottom. Windows tile in the remaining area. The active workspace is a circle in the theme accent with a soft glow.
+Waybar is a vertical island on the left edge, 48 px wide and fully rounded, floating `bar_margin` (12) from the screen. It has three sections: workspaces at the top, the clock (hours over minutes) in the middle, and the status cluster at the bottom. Windows tile in the remaining area. The active workspace is a circle in the theme accent with a soft glow.
 
 The bar shows icons from Symbols Nerd Font. Names, percentages, and titles appear in the tooltip. The clock shows only the time, in EB Garamond. Its tooltip is Waybar's calendar. Scroll moves the month. Right click switches between month and year.
 
@@ -76,15 +76,15 @@ The status cluster, from top to bottom, is media, CPU, memory, Bluetooth, networ
 - Battery shows a level icon. The tooltip is the capacity and the remaining time. Charging uses green. Warning starts at 30 and critical at 15.
 - Power is a power icon in the accent color. It offers Lock (`hyprlock`), Restart, and Power off.
 
-The Wi-Fi popup is 340 px wide. The title "Wi-Fi" sits beside the radio switch, with a caption below it (`N networks available`, or `Off`, `Scanning...`, `Connecting to <name>...`). Networks are rows, sorted by signal. Each row shows the signal icon, a lock when the network is secured, the name, and a circular action. The connected row has an accent border, a bright name, and a filled action that disconnects when clicked. Any other row connects when clicked. Secured networks without a saved profile show the password field and the connect icon below the list. The error text appears only when needed. A full-width Rescan pill ends the panel. Rows fade in one after another. The panel namespace is `genos-popup`, which Hyprland blurs.
+The Wi-Fi popup is 310 px wide. The title "Wi-Fi" sits beside the radio switch, with a caption below it (`N networks available`, or `Off`, `Scanning...`, `Connecting to <name>...`). Networks are rows, sorted by signal. Each row shows the signal icon, a lock when the network is secured, the name, and a circular action. The connected row has an accent border, a bright name, and a filled action that disconnects when clicked. Any other row connects when clicked. Secured networks without a saved profile show the password field and the connect icon below the list. The error text appears only when needed. A full-width Rescan pill ends the panel. Rows fade in one after another. The panel namespace is `genos-popup`, which Hyprland blurs.
 
-The volume popup has an output group and an input group. Each group shows a short label, the mute icon, the slider, and the percentage. Devices stay in a list. The active device name is bold and its row uses the accent color. A row gains a border on hover. The tooltip is the full device name, centered. Mute is an icon that follows the mute state.
+The volume popup is 310 px wide. The title "Sound" has a caption with the default output and its volume. Output and Input sections follow, divided by a thin line. Each section has a mute icon, a slider with a percentage pill, and a list of devices. Device names drop the repeated hardware prefix (for example `HDMI 1 · C24F390`), and the tooltip shows the full name. Each row has an icon by type (headphones, monitor, microphone, speaker). The default device has an accent border, a bright name, and a check. Any other row becomes the default when clicked. Rows fade in one after another when the device list changes.
 
 The clock popup keeps the time, the date, and the calendar.
 
 ## Popups
 
-The clock, Wi-Fi and volume popups open beside the bar, 80 px from the left edge, on the monitor under the cursor. A popup opened from the upper half of the screen grows downward from the cursor. One opened from the lower half grows upward. Each slides 12 px out of the bar while fading in over 180 ms (`popup.h`). Panels have 16 px corners and a soft shadow.
+The clock, Wi-Fi and volume popups open beside the bar, 76 px from the left edge, on the monitor under the cursor. A popup opened from the upper half of the screen grows downward from the cursor. One opened from the lower half grows upward. Each slides 12 px out of the bar while fading in over 180 ms (`popup.h`). Panels have 16 px corners and a soft shadow.
 
 ## On-screen display
 

@@ -6,7 +6,7 @@
 #include <stdio.h>
 
 /* The bar is a vertical island on the left edge; popups sit beside it. */
-#define POPUP_LEFT 80
+#define POPUP_LEFT 76
 #define POPUP_EDGE 12
 #define POPUP_ANIM_US 180000
 #define POPUP_ANIM_RISE 12
@@ -76,6 +76,34 @@ static void popup_place(GtkWindow *window, GtkWidget *panel) {
         gtk_widget_set_margin_top(panel, 0);
         gtk_widget_set_margin_bottom(panel, below > POPUP_EDGE ? below : POPUP_EDGE);
     }
+}
+
+/* Rows start hidden and fade in one after another (CSS `row.in` shows them). */
+static gboolean reveal_row(gpointer data) {
+    GtkWidget *row = g_weak_ref_get(data);
+
+    if (row != NULL) {
+        gtk_style_context_add_class(gtk_widget_get_style_context(row), "in");
+        g_object_unref(row);
+    }
+    return G_SOURCE_REMOVE;
+}
+
+static void free_weak(gpointer data) {
+    g_weak_ref_clear(data);
+    g_free(data);
+}
+
+static inline void popup_cascade(GtkWidget *list) {
+    GList *rows = gtk_container_get_children(GTK_CONTAINER(list));
+    guint delay = 20;
+
+    for (GList *item = rows; item != NULL; item = item->next, delay += 40) {
+        GWeakRef *ref = g_new0(GWeakRef, 1);
+        g_weak_ref_init(ref, item->data);
+        g_timeout_add_full(G_PRIORITY_DEFAULT, delay, reveal_row, ref, free_weak);
+    }
+    g_list_free(rows);
 }
 
 #endif

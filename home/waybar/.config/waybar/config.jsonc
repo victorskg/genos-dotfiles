@@ -1,7 +1,7 @@
 {
   "layer": "top",
   "position": "left",
-  "width": 52,
+  "width": 48,
   "margin-top": 12,
   "margin-bottom": 12,
   "margin-left": 12,
@@ -27,7 +27,7 @@
       "enable": true,
       "update-active-window": true,
       "active-window-position": "first",
-      "icon-size": 20,
+      "icon-size": 18,
       "max-icons": 1,
       "format": "{icon}"
     }

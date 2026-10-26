@@ -8,31 +8,31 @@ window { background-color: rgba(0, 0, 0, 0); }
     border-top: 1px solid alpha(@accent, 0.5);
     border-radius: 16px;
     box-shadow: 0 14px 36px rgba(0, 0, 0, 0.55);
-    padding: 20px 22px 16px;
+    padding: 18px 20px 14px;
 }
 
-#stack > * { margin-top: 8px; }
+#stack > * { margin-top: 7px; }
 
 #stack > *:first-child { margin-top: 0; }
 
-#stack > calendar { margin-top: 16px; }
+#stack > calendar { margin-top: 14px; }
 
 #time {
     color: @fg;
     font-family: "EB Garamond";
-    font-size: 40px;
+    font-size: 36px;
 }
 
 #date {
     color: @fg;
     font-family: Inter, sans-serif;
-    font-size: 14px;
+    font-size: 13px;
 }
 
 #meta {
     color: @faint;
     font-family: Inter, sans-serif;
-    font-size: 12px;
+    font-size: 11px;
     margin-bottom: 4px;
 }
 
@@ -40,13 +40,13 @@ calendar {
     color: @fg;
     background-color: transparent;
     border: none;
-    padding: 8px 4px 0;
+    padding: 7px 4px 0;
 }
 
 calendar.header {
     color: @fg;
     background: transparent;
-    padding: 4px 0 8px;
+    padding: 4px 0 7px;
 }
 
 calendar.button {
@@ -54,7 +54,7 @@ calendar.button {
     background: transparent;
     border: none;
     border-radius: 8px;
-    padding: 4px 8px;
+    padding: 4px 7px;
     margin: 0 4px;
 }
 

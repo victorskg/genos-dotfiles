@@ -1,3 +1,5 @@
+#define _GNU_SOURCE
+
 #include <ctype.h>
 #include <gtk-layer-shell.h>
 #include <gtk/gtk.h>
@@ -12,6 +14,8 @@
 #include "popup.h"
 
 #define MAX_NODES 16
+
+static GtkWidget *caption;
 
 typedef struct {
     int id;
@@ -178,16 +182,59 @@ static gboolean row_tip(GtkWidget *widget, gint x, gint y, gboolean keyboard, Gt
     return TRUE;
 }
 
-static GtkWidget *node_row(const Node *node) {
+static void drop_text(char *s, const char *needle) {
+    char *hit;
+    while ((hit = strstr(s, needle)) != NULL) memmove(hit, hit + strlen(needle), strlen(hit + strlen(needle)) + 1);
+}
+
+/* "500 Series ... (HD Audio) HDMI / DisplayPort 1 Output [C24F390] (Stereo)" -> "HDMI 1 · C24F390" */
+static void short_name(const char *full, char *out, size_t n) {
+    const char *tail = strstr(full, "(HD Audio) ");
+    char *hit;
+
+    snprintf(out, n, "%s", tail != NULL ? tail + strlen("(HD Audio) ") : full);
+    drop_text(out, " (Stereo)");
+    drop_text(out, " Analog Stereo");
+    drop_text(out, " Output");
+    hit = strstr(out, "HDMI / DisplayPort");
+    if (hit != NULL) memmove(hit + 4, hit + strlen("HDMI / DisplayPort"), strlen(hit + strlen("HDMI / DisplayPort")) + 1);
+    hit = strstr(out, " [");
+    if (hit != NULL) {
+        char *close = strchr(hit, ']');
+        if (close != NULL) *close = '\0';
+        memmove(hit + 4, hit + 2, strlen(hit + 2) + 1);
+        memcpy(hit, " \xC2\xB7 ", 4);
+    }
+}
+
+static const char *device_icon(const char *name, int is_input) {
+    if (strcasestr(name, "headphone") != NULL) return "\xF3\xB0\x8B\x8B";
+    if (strcasestr(name, "hdmi") != NULL || strcasestr(name, "displayport") != NULL) return "\xF3\xB0\x8D\xB9";
+    return is_input ? "\xF3\xB0\x8D\xAC" : "\xF3\xB0\x93\x83";
+}
+
+static GtkWidget *node_row(const Node *node, int is_input) {
     GtkWidget *row = gtk_list_box_row_new();
-    GtkWidget *item = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
-    GtkWidget *label = gtk_label_new(node->name);
+    GtkWidget *item = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 10);
+    char name[192];
+    GtkWidget *glyph;
+    GtkWidget *label;
+    GtkWidget *action = gtk_label_new(node->is_default ? "\xF3\xB0\x84\xAC" : "");
+
+    short_name(node->name, name, sizeof name);
+    glyph = gtk_label_new(device_icon(node->name, is_input));
+    label = gtk_label_new(name);
     gtk_widget_set_name(item, "item");
+    gtk_widget_set_name(glyph, "glyph");
     gtk_widget_set_name(label, "name");
+    gtk_widget_set_name(action, "action");
+    gtk_widget_set_valign(action, GTK_ALIGN_CENTER);
     gtk_label_set_xalign(GTK_LABEL(label), 0);
     gtk_label_set_ellipsize(GTK_LABEL(label), PANGO_ELLIPSIZE_END);
-    gtk_label_set_max_width_chars(GTK_LABEL(label), 28);
+    gtk_widget_set_hexpand(label, TRUE);
+    gtk_box_pack_start(GTK_BOX(item), glyph, FALSE, FALSE, 0);
     gtk_box_pack_start(GTK_BOX(item), label, TRUE, TRUE, 0);
+    gtk_box_pack_end(GTK_BOX(item), action, FALSE, FALSE, 0);
     gtk_container_add(GTK_CONTAINER(row), item);
     if (node->is_default) gtk_style_context_add_class(gtk_widget_get_style_context(row), "current");
     g_object_set_data(G_OBJECT(row), "id", GINT_TO_POINTER(node->id));
@@ -203,8 +250,10 @@ static void fill_nodes(Group *group, const Node *nodes, int n) {
     if (strcmp(next, group->signature) == 0) return;
     snprintf(group->signature, sizeof group->signature, "%s", next);
     clear_list(group->list);
-    for (int i = 0; i < n; i++) gtk_container_add(GTK_CONTAINER(group->list), node_row(&nodes[i]));
+    for (int i = 0; i < n; i++)
+        gtk_container_add(GTK_CONTAINER(group->list), node_row(&nodes[i], group == &input));
     gtk_widget_show_all(group->list);
+    popup_cascade(group->list);
 }
 
 static void refresh_group(Group *group, const char *status) {
@@ -231,6 +280,18 @@ static void refresh_group(Group *group, const char *status) {
     gtk_widget_set_tooltip_text(group->mute, muted ? "Unmute" : "Mute");
     if (muted) gtk_style_context_add_class(gtk_widget_get_style_context(group->mute), "muted");
     else gtk_style_context_remove_class(gtk_widget_get_style_context(group->mute), "muted");
+    if (group == &output) {
+        char name[192];
+        char text[256];
+        const char *current = "";
+        for (int i = 0; i < n; i++) {
+            if (nodes[i].is_default) current = nodes[i].name;
+        }
+        short_name(current, name, sizeof name);
+        if (muted) snprintf(text, sizeof text, "%s \xC2\xB7 Muted", name);
+        else snprintf(text, sizeof text, "%s \xC2\xB7 %d%%", name, percent);
+        gtk_label_set_text(GTK_LABEL(caption), text);
+    }
     if (group->volume_id == 0) {
         group->updating = 1;
         gtk_range_set_value(GTK_RANGE(group->scale), percent);
@@ -414,8 +475,7 @@ static void build_group(GtkWidget *box, Group *group) {
 
     gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scroll), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
     gtk_scrolled_window_set_propagate_natural_height(GTK_SCROLLED_WINDOW(scroll), TRUE);
-    gtk_scrolled_window_set_max_content_height(GTK_SCROLLED_WINDOW(scroll), 140);
-    gtk_scrolled_window_set_min_content_width(GTK_SCROLLED_WINDOW(scroll), 280);
+    gtk_scrolled_window_set_max_content_height(GTK_SCROLLED_WINDOW(scroll), 216);
     group->list = gtk_list_box_new();
     gtk_list_box_set_selection_mode(GTK_LIST_BOX(group->list), GTK_SELECTION_NONE);
     gtk_list_box_set_activate_on_single_click(GTK_LIST_BOX(group->list), TRUE);
@@ -455,7 +515,7 @@ int main(void) {
         "scale trough { background-color: #313244; min-height: 6px; border-radius: 3px; }"
         "scale highlight { background-color: #8da9c4; border-radius: 3px; }"
         "scale slider { background-color: #ffffff; min-width: 14px; min-height: 14px; }";
-    GtkWidget *window, *backdrop, *panel, *box;
+    GtkWidget *window, *backdrop, *panel, *box, *sound_title;
     GtkCssProvider *provider;
     GdkScreen *screen;
     GdkVisual *visual;
@@ -484,12 +544,21 @@ int main(void) {
     backdrop = gtk_event_box_new();
     panel = gtk_event_box_new();
     gtk_widget_set_name(panel, "panel");
-    gtk_widget_set_size_request(panel, 300, -1);
+    gtk_widget_set_size_request(panel, 310, -1);
     popup_place(GTK_WINDOW(window), panel);
     popup_animate(panel);
 
     box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
     gtk_widget_set_name(box, "stack");
+    sound_title = gtk_label_new("Sound");
+    gtk_widget_set_name(sound_title, "sound");
+    gtk_label_set_xalign(GTK_LABEL(sound_title), 0);
+    caption = gtk_label_new("");
+    gtk_widget_set_name(caption, "caption");
+    gtk_label_set_xalign(GTK_LABEL(caption), 0);
+    gtk_label_set_ellipsize(GTK_LABEL(caption), PANGO_ELLIPSIZE_END);
+    gtk_box_pack_start(GTK_BOX(box), sound_title, FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(box), caption, FALSE, FALSE, 0);
     build_group(box, &output);
     build_group(box, &input);
     error_label = gtk_label_new("");

@@ -12,36 +12,36 @@ window { background-color: rgba(0, 0, 0, 0); }
     padding: 0;
 }
 
-#stack { margin: 20px 18px 18px; }
+#stack { margin: 18px 16px 16px; }
 
 #caption { margin-top: 2px; }
-#stack > #list-wrap { margin-top: 14px; }
-#stack > #secret { margin-top: 12px; }
-#stack > #error { margin-top: 10px; }
-#stack > #rescan { margin-top: 14px; }
+#stack > #list-wrap { margin-top: 13px; }
+#stack > #secret { margin-top: 11px; }
+#stack > #error { margin-top: 9px; }
+#stack > #rescan { margin-top: 13px; }
 
-#secret > * { margin-top: 8px; }
+#secret > * { margin-top: 7px; }
 #secret > *:first-child { margin-top: 0; }
-#secret-row > button { margin-left: 6px; }
+#secret-row > button { margin-left: 5px; }
 
 /* ---------- Typography ---------- */
 #title {
     color: @fg;
     font-family: Inter, sans-serif;
-    font-size: 17px;
+    font-size: 15px;
     font-weight: bold;
 }
 
 #status, #pass-label {
     color: @muted;
     font-family: Inter, sans-serif;
-    font-size: 12px;
+    font-size: 11px;
 }
 
 #ssid {
     color: @fg;
     font-family: Inter, sans-serif;
-    font-size: 14px;
+    font-size: 13px;
 }
 
 row.connected #ssid { font-weight: bold; color: @accent_bright; }
@@ -49,8 +49,8 @@ row.connected #ssid { font-weight: bold; color: @accent_bright; }
 #error {
     color: @danger;
     font-family: Inter, sans-serif;
-    font-size: 12px;
-    padding: 6px 10px;
+    font-size: 11px;
+    padding: 5px 9px;
     border-radius: 10px;
     background-color: alpha(@danger, 0.1);
     border: 1px solid alpha(@danger, 0.3);
@@ -58,7 +58,7 @@ row.connected #ssid { font-weight: bold; color: @accent_bright; }
 
 #glyph {
     font-family: "Symbols Nerd Font";
-    font-size: 20px;
+    font-size: 18px;
     color: @muted;
 }
 
@@ -66,7 +66,7 @@ row.connected #glyph { color: @accent_bright; }
 
 #lock {
     font-family: "Symbols Nerd Font";
-    font-size: 13px;
+    font-size: 12px;
     color: @faint;
 }
 
@@ -77,9 +77,9 @@ button {
     box-shadow: none;
     border-radius: 10px;
     padding: 2px;
-    min-width: 24px;
-    min-height: 24px;
-    font-size: 14px;
+    min-width: 22px;
+    min-height: 22px;
+    font-size: 13px;
     color: @muted;
     transition: background-color 180ms ease, color 180ms ease;
 }
@@ -90,8 +90,8 @@ button:disabled { color: @faint; background: transparent; }
 
 #rescan {
     font-family: Inter, "Symbols Nerd Font", sans-serif;
-    font-size: 14px;
-    padding: 9px 12px;
+    font-size: 13px;
+    padding: 8px 11px;
     border-radius: 999px;
     color: @fg;
     background-color: alpha(@accent, 0.22);
@@ -106,8 +106,8 @@ switch {
     background-color: @overlay;
     border: 1px solid @line;
     border-radius: 999px;
-    min-width: 44px;
-    min-height: 24px;
+    min-width: 40px;
+    min-height: 22px;
     transition: background-color 220ms ease, border-color 220ms ease;
 }
 
@@ -122,8 +122,8 @@ switch slider {
     border: none;
     box-shadow: none;
     border-radius: 999px;
-    min-width: 18px;
-    min-height: 18px;
+    min-width: 16px;
+    min-height: 16px;
     margin: 2px;
     transition: all 220ms ease;
 }
@@ -142,7 +142,7 @@ row.in { opacity: 1; }
 
 #item {
     margin: 2px 0;
-    padding: 10px 12px;
+    padding: 9px 11px;
     border-radius: 12px;
     border: 1px solid transparent;
     transition: background-color 180ms ease, border-color 180ms ease;
@@ -159,10 +159,10 @@ row.connected #item {
 
 #action {
     font-family: "Symbols Nerd Font";
-    font-size: 15px;
+    font-size: 14px;
     color: @muted;
-    min-width: 30px;
-    min-height: 30px;
+    min-width: 27px;
+    min-height: 27px;
     border-radius: 999px;
     background-color: alpha(@overlay, 0.9);
 }
@@ -183,8 +183,8 @@ tooltip {
 tooltip #tip {
     color: @fg;
     font-family: Inter, sans-serif;
-    font-size: 12px;
-    padding: 2px 10px;
+    font-size: 11px;
+    padding: 2px 9px;
 }
 
 /* ---------- Entry ---------- */
@@ -192,13 +192,13 @@ entry {
     background-color: alpha(@overlay, 0.8);
     color: @fg;
     font-family: Inter, sans-serif;
-    font-size: 12px;
+    font-size: 11px;
     border: 1px solid alpha(@line, 0.8);
     border-radius: 8px;
-    padding: 5px 9px;
+    padding: 4px 8px;
     min-height: 0;
     caret-color: @accent_bright;
-    margin-right: 6px;
+    margin-right: 5px;
     transition: border-color 180ms ease, box-shadow 180ms ease;
 }
 
