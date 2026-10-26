@@ -143,6 +143,11 @@ echo "==> Installing AUR packages"
 yay -S --needed --noconfirm --removemake --answerdiff None --answerclean None \
   "${aur_packages[@]}"
 
+echo "==> Installing Claude Code CLI"
+if [[ ! -x $HOME/.local/bin/claude ]]; then
+  curl -fsSL https://claude.ai/install.sh | bash
+fi
+
 echo "==> Checking dotfile packages"
 for package in "${stow_packages[@]}"; do
   if [[ ! -d "$DOTFILES_DIR/home/$package" ]]; then
