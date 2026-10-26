@@ -283,9 +283,20 @@ def handle(line):
             fill_gap(ws_id)
 
 
+def start_at_first():
+    if occupied():
+        return
+    cmds = []
+    if external_name:
+        cmds.append(dsp(f'hl.dsp.focus({{ monitor = "{external_name}" }})'))
+    cmds.append(dsp('hl.dsp.focus({ workspace = "1" })'))
+    batch(cmds)
+
+
 def main():
     claim()
     rescan()
+    start_at_first()
     sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
     sock.connect(str(base / ".socket2.sock"))
     try:

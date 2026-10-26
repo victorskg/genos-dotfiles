@@ -51,6 +51,8 @@ With an external monitor connected:
 - Waybar lists numbered workspaces only. It hides names matching `ext-*`.
 - Unplugging the external monitor moves windows off `ext-*` back onto their numbered workspaces and focuses the last main workspace.
 
+When the follower starts with no windows open, it focuses workspace 1 on the external monitor (or the only monitor).
+
 Closing the last window on a numbered workspace closes the gap. Higher occupied workspaces shift down to fill it. If nothing is higher, focus moves to the nearest lower occupied workspace.
 
 ## Bar
@@ -92,6 +94,8 @@ Left click runs the default action when the sending program defined one, then cl
 Still wallpapers live in `~/.local/share/genos/wallpapers`. `swaybg` draws the file linked from `~/.local/state/genos/wallpaper`, scaled and cropped to fill each output. Super+W cycles forward. Super+Shift+W cycles backward. With no image, the desktop stays the abyss color. The login screen does not draw a wallpaper. See `docs/wallpaper.md`.
 
 The theme is defined in `home/theme/.config/genos/palette.conf`. `variant=blood` uses crimson for focus. `variant=eclipse` uses violet. Run `apply-theme`, then `hyprctl reload`. `apply-theme` writes `colors.lua` for Hyprland and `colors.conf` for hyprlock. UI type is Inter, the lock clock is EB Garamond, and GTK prefers the dark theme. Kitty keeps its own colors, matched to the palette background, foreground, and gold. `apply-theme` only sets Kitty `background_opacity` from `opacity_terminal`.
+
+Kitty sets `copy_on_select clipboard`. Selecting text with the mouse writes to both the primary selection and the clipboard, so Ctrl+Shift+V pastes the latest selection. Without it, a selection reaches only the primary selection (middle click) and Ctrl+Shift+V pastes an older clipboard entry. On Wayland the source window owns the clipboard, so its content is lost when that window closes. `wl-clip-persist --clipboard regular` starts with Hyprland and keeps a copy of the clipboard after the source closes. It keeps no history.
 
 The window border, the launcher border, and the power icon use the bright accent. Fills that carry foreground text keep the darker accent. Blur brightness is 1. `blur_vibrancy` keeps saturation in the glass.
 

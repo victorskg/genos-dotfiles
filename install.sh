@@ -17,6 +17,7 @@ packages=(
   kitty
   chromium
   mako
+  wl-clip-persist
   thunar
   xdg-desktop-portal
   xdg-desktop-portal-hyprland
@@ -50,6 +51,19 @@ hardware=(
   vulkan-intel
 )
 
+gaming=(
+  steam
+  ttf-liberation
+  nvidia-prime
+  lib32-nvidia-utils
+  lib32-mesa
+  lib32-vulkan-intel
+  gamemode
+  lib32-gamemode
+  mangohud
+  lib32-mangohud
+)
+
 aur_packages=(
   zen-browser-bin
   cursor-bin
@@ -79,8 +93,21 @@ install_yay() {
   rm -rf "$build_dir"
 }
 
+enable_multilib() {
+  if grep -q '^\[multilib\]' /etc/pacman.conf; then
+    return 0
+  fi
+  echo "==> Enabling [multilib]"
+  sudo sed -i '/^#\[multilib\]/{
+    s/^#//
+    n
+    s/^#Include/Include/
+  }' /etc/pacman.conf
+}
+
 echo "==> Installing GenOS packages"
-sudo pacman -S --needed "${packages[@]}" "${hardware[@]}"
+enable_multilib
+sudo pacman -Syu --needed "${packages[@]}" "${hardware[@]}" "${gaming[@]}"
 
 echo "==> Configuring zram"
 sudo install -Dm644 "$DOTFILES_DIR/etc/systemd/zram-generator.conf" /etc/systemd/zram-generator.conf
@@ -98,6 +125,14 @@ sudo systemctl enable NetworkManager
 
 echo "==> Enabling Bluetooth"
 sudo systemctl enable bluetooth.service
+
+echo "==> Enabling NVIDIA Dynamic Boost"
+sudo systemctl enable nvidia-powerd.service
+
+if getent group gamemode >/dev/null; then
+  echo "==> Adding $USER to gamemode"
+  sudo usermod -aG gamemode "$USER"
+fi
 
 if ! command -v yay >/dev/null 2>&1; then
   echo "==> Building yay"
@@ -121,6 +156,7 @@ echo "==> Applying the GenOS theme"
 
 echo "==> Installing webapp"
 install -Dm755 "$DOTFILES_DIR/bin/webapp" "$HOME/.local/bin/webapp"
+sudo install -Dm755 "$DOTFILES_DIR/bin/game-run" /usr/local/bin/game-run
 path_line='export PATH="$HOME/.local/bin:$PATH"'
 if [[ ! -f $HOME/.bashrc ]]; then
   printf '%s\n' "$path_line" >"$HOME/.bashrc"

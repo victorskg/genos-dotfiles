@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if (($# < 1)); then
+  echo "usage: game-run <command> [args...]" >&2
+  echo "Steam launch options: game-run %command%" >&2
+  echo "Overlay: MANGOHUD=1 game-run %command%" >&2
+  exit 1
+fi
+
+exec gamemoderun prime-run "$@"

@@ -15,6 +15,7 @@ Minimal personal Arch Linux dotfiles, designed as the foundation for a lightweig
 - Chromium, for web apps (`webapp add`, `webapp remove`)
 - Cursor
 - PipeWire audio
+- Steam, with Proton on the NVIDIA GPU via `game-run`
 - GNU Stow for configuration management
 
 ## Goals
@@ -77,3 +78,4 @@ These official packages are not installed. Each one waits for its own approval:
 - Back up existing configuration files before deploying dotfiles.
 - The initial setup is intended for real hardware; virtual machine graphics compatibility may vary.
 - The installer installs the NVIDIA open driver, Intel media and Vulkan drivers, zram, and the ABNT2 console keymap for this machine. It does not create an Arch ISO.
+- Displays stay on Intel. Steam stays on Intel. Each game uses the launch option `game-run %command%`, which is `gamemoderun prime-run`. Overlay: `MANGOHUD=1 game-run %command%`. A new login is required after the first install so the `gamemode` group applies.
