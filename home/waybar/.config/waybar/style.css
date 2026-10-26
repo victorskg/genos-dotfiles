@@ -3,46 +3,33 @@
 @import "surface.css";
 
 window#waybar {
-    border: none;
     color: @fg;
 }
 
 .modules-left,
 .modules-center,
 .modules-right {
-    margin: 0 8px;
-    padding: 0 10px;
-    border-radius: 10px;
-    border: 1px solid @line;
-    border-top-color: @gold;
-}
-
-.modules-left {
-    margin-left: 10px;
-}
-
-.modules-right {
-    margin-right: 10px;
+    margin: 0;
+    padding: 10px 0;
 }
 
 menu {
     background: @surface;
     border: 1px solid @line;
-    border-top-color: @gold;
-    border-radius: 10px;
+    border-radius: 14px;
     color: @fg;
-    padding: 6px;
+    padding: 8px;
 }
 
 menuitem {
     color: @fg;
-    padding: 6px 14px;
-    border-radius: 4px;
+    padding: 8px 16px;
+    border-radius: 8px;
 }
 
 menuitem:hover {
     background-color: @overlay;
-    color: @gold;
+    color: @accent_bright;
 }
 
 button,
@@ -58,24 +45,26 @@ button:hover {
 #workspaces > button,
 #workspaces > button.urgent {
     font-family: "Symbols Nerd Font";
-    font-size: 11px;
+    font-size: 16px;
     color: @muted;
-    min-width: 16px;
-    padding: 0 8px;
-    margin: 2px 3px;
+    min-width: 30px;
+    min-height: 30px;
+    padding: 0;
+    margin: 3px 0;
     border-radius: 999px;
     transition: color 150ms ease, background-color 150ms ease;
 }
 
 #workspaces > button:hover {
     background-color: @overlay;
-    color: @gold;
+    color: @accent_bright;
 }
 
 #workspaces > button.active,
 #workspaces > button.active:hover {
     background-color: @accent;
     color: @fg;
+    box-shadow: 0 0 12px alpha(@accent_bright, 0.45);
 }
 
 #workspaces button.taskbar-window,
@@ -86,8 +75,8 @@ button:hover {
 #workspaces > button.active button.taskbar-window:hover {
     margin: 0 0 0 6px;
     padding: 0;
-    min-width: 16px;
-    min-height: 16px;
+    min-width: 20px;
+    min-height: 20px;
     border: none;
     border-radius: 0;
     background: none;
@@ -98,8 +87,8 @@ button:hover {
 
 #clock {
     font-family: "EB Garamond";
-    font-size: 17px;
-    padding: 0 6px;
+    font-size: 20px;
+    padding: 6px 0;
 }
 
 #custom-media,
@@ -111,8 +100,8 @@ button:hover {
 #battery,
 #custom-power {
     font-family: "Symbols Nerd Font";
-    font-size: 16px;
-    padding: 0 6px;
+    font-size: 18px;
+    padding: 7px 0;
     transition: color 150ms ease, background-color 150ms ease;
 }
 
@@ -136,7 +125,7 @@ button:hover {
 #battery.charging,
 #battery.plugged,
 #battery.full {
-    color: @gold;
+    color: @success;
 }
 
 #cpu.warning,
@@ -164,14 +153,13 @@ button:hover {
 #battery:hover,
 #custom-power:hover,
 #clock:hover {
-    color: @gold;
+    color: @accent_bright;
 }
 
 tooltip {
     background: @surface;
     border: 1px solid @line;
-    border-top-color: @gold;
-    border-radius: 10px;
+    border-radius: 12px;
 }
 
 tooltip label {

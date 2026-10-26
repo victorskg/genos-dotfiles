@@ -15,3 +15,11 @@ anchor=top-right
 
 on-button-left=invoke-default-action
 on-button-right=dismiss
+
+[app-name=genos-osd]
+anchor=bottom-center
+width=260
+height=44
+margin=0,0,64
+default-timeout=1200
+format=<span foreground="#F0B429" weight="bold">%s</span>

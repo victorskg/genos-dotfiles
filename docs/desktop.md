@@ -25,6 +25,9 @@ Layout is dwindle. Keyboard layout is Brazilian ABNT2. New windows open on an em
 | Super+Shift+Comma / Super+Shift+Period | Move the window to the previous / next workspace |
 | Print | Save a screenshot of every output to `~/Pictures` |
 | Shift+Print | Save a selected region to `~/Pictures` |
+| XF86AudioRaiseVolume / XF86AudioLowerVolume | Volume ±5% and show the OSD |
+| XF86AudioMute | Toggle mute and show the OSD |
+| XF86MonBrightnessUp / XF86MonBrightnessDown | Brightness ±5% (never below 1%) and show the OSD |
 | Super+W | Next wallpaper |
 | Super+Shift+W | Previous wallpaper |
 | Super+Shift+Left | Move the window to `eDP-1` |
@@ -57,20 +60,20 @@ Closing the last window on a numbered workspace closes the gap. Higher occupied 
 
 ## Bar
 
-Waybar sits at the top as three frosted groups: the clock, workspaces, and the status cluster. Its top margin matches `gap_out` (12). Each group has a gilt top edge. The active workspace is a pill in the theme accent.
+Waybar is a vertical island on the left edge, 52 px wide and fully rounded, floating `bar_margin` (12) from the screen. It has three sections: workspaces at the top, the clock (hours over minutes) in the middle, and the status cluster at the bottom. Windows tile in the remaining area. The active workspace is a circle in the theme accent with a soft glow.
 
 The bar shows icons from Symbols Nerd Font. Names, percentages, and titles appear in the tooltip. The clock shows only the time, in EB Garamond. Its tooltip is Waybar's calendar. Scroll moves the month. Right click switches between month and year.
 
 Each occupied workspace is a circle. The focused window's icon sits inside that workspace. Empty workspaces stay hidden. Names matching `ext-*` stay hidden.
 
-The status cluster, from left to right, is media, CPU, memory, Bluetooth, network, volume, battery, and power.
+The status cluster, from top to bottom, is media, CPU, memory, Bluetooth, network, volume, battery, and power.
 
 - Media shows play or pause. The tooltip is the artist and the title. Left click toggles playback through `playerctl`. Right click skips to the next track. The module is absent when no player is running. Paused media uses the muted color.
 - CPU and memory show an icon. The tooltip is the percentage. Warning starts at 70 and critical at 90.
 - Wi-Fi shows signal strength. Ethernet and a disconnected radio use their own icons. The tooltip is the network name. Click opens the Wi-Fi popup.
 - Bluetooth shows one icon. The tooltip lists the connected device. Off and disabled use the faint color. Click opens `bluetui` in Kitty.
 - Volume shows a level icon, or a mute icon in steel. The tooltip is the percentage. Scroll changes the volume. Click opens the volume popup.
-- Battery shows a level icon. The tooltip is the capacity and the remaining time. Charging uses gold. Warning starts at 30 and critical at 15.
+- Battery shows a level icon. The tooltip is the capacity and the remaining time. Charging uses green. Warning starts at 30 and critical at 15.
 - Power is a power icon in the accent color. It offers Lock (`hyprlock`), Restart, and Power off.
 
 The Wi-Fi popup has no title. When a network is active, an arrow and its name sit on one row with refresh, disconnect, and the radio switch. Networks appear in a grid of three. Each tile shows the signal icon, then the name and, when the network is locked, a lock, both centered. The connected network's name is bold. A tile gains a border on hover. The connected tile uses the accent color. The tooltip shows the full network name and, on the next line, the signal percentage. Both lines are centered. The password field and the error text appear only when needed. Refresh, disconnect, and connect are icons. Their names are tooltips.
@@ -79,9 +82,17 @@ The volume popup has an output group and an input group. Each group shows a shor
 
 The clock popup keeps the time, the date, and the calendar.
 
+## Popups
+
+The clock, Wi-Fi and volume popups open beside the bar, 80 px from the left edge, on the monitor under the cursor. A popup opened from the upper half of the screen grows downward from the cursor. One opened from the lower half grows upward. Each slides 12 px out of the bar while fading in over 180 ms (`popup.h`). Panels have 16 px corners and a soft shadow.
+
+## On-screen display
+
+`~/.config/hypr/osd` changes volume or brightness and sends a Mako notification with the app name `genos-osd` and a `value` hint. Mako draws it at the bottom center, 260 px wide, as an accent title over a progress fill in the accent color. Each change replaces the previous slip and closes after 1.2 seconds. Brightness is written through logind (`busctl ... SetBrightness`), so no extra package or udev rule is needed.
+
 ## Notifications
 
-Mako draws a slip at the top right, 200 px wide and at most 36 px tall. The title is gold, the body is faint, and both sit on one line. The frame is a 1 px gold line. Every corner uses `radius_popup`. The icon is 12 px. The slip closes after 5 seconds. A critical notification takes the bright border and stays until it is closed.
+Mako draws a slip at the top right, 200 px wide and at most 36 px tall. The title is the bright accent, the body is faint, and both sit on one line. The frame is a 1 px line in the surface line color. Every corner uses `radius_popup`. The icon is 12 px. The slip closes after 5 seconds. A critical notification takes the bright border and stays until it is closed.
 
 Left click runs the default action when the sending program defined one, then closes the card. A notification with no action only closes. Right click closes it.
 
@@ -93,12 +104,12 @@ Left click runs the default action when the sending program defined one, then cl
 
 Still wallpapers live in `~/.local/share/genos/wallpapers`. `swaybg` draws the file linked from `~/.local/state/genos/wallpaper`, scaled and cropped to fill each output. Super+W cycles forward. Super+Shift+W cycles backward. With no image, the desktop stays the abyss color. The login screen does not draw a wallpaper. See `docs/wallpaper.md`.
 
-The theme is defined in `home/theme/.config/genos/palette.conf`. `variant=blood` uses crimson for focus. `variant=eclipse` uses violet. Run `apply-theme`, then `hyprctl reload`. `apply-theme` writes `colors.lua` for Hyprland and `colors.conf` for hyprlock. UI type is Inter, the lock clock is EB Garamond, and GTK prefers the dark theme. Kitty keeps its own colors, matched to the palette background, foreground, and gold. `apply-theme` only sets Kitty `background_opacity` from `opacity_terminal`.
+The theme uses one accent hue per variant. Surfaces, overlays, and lines are neutrals tinted by that hue (`<variant>_bg`, `_surface`, `_overlay`, `_line`). Gold appears only for warnings. The theme is defined in `home/theme/.config/genos/palette.conf`. `variant=blood` uses crimson for focus. `variant=eclipse` uses violet. `variant=verdigris` uses oxidized teal. `home/theme/.config/genos/variants.conf` maps each wallpaper file name to a variant. `wallpaper` runs `set-variant` on every change and at login, which rewrites `variant` in `palette.conf`, regenerates the theme, and reloads Hyprland, Waybar, and Mako. Run `set-variant <name>` to force a variant until the next wallpaper change. A wallpaper missing from `variants.conf` keeps the current variant. Run `apply-theme`, then `hyprctl reload`. `apply-theme` writes `colors.lua` for Hyprland and `colors.conf` for hyprlock. UI type is Inter, the lock clock is EB Garamond, and GTK prefers the dark theme. `apply-theme` writes Kitty `colors.conf` (background, foreground, cursor, selection) and `opacity.conf`.
 
 Kitty sets `copy_on_select clipboard`. Selecting text with the mouse writes to both the primary selection and the clipboard, so Ctrl+Shift+V pastes the latest selection. Without it, a selection reaches only the primary selection (middle click) and Ctrl+Shift+V pastes an older clipboard entry. On Wayland the source window owns the clipboard, so its content is lost when that window closes. `wl-clip-persist --clipboard regular` starts with Hyprland and keeps a copy of the clipboard after the source closes. It keeps no history.
 
 The window border, the launcher border, and the power icon use the bright accent. Fills that carry foreground text keep the darker accent. Blur brightness is 1. `blur_vibrancy` keeps saturation in the glass.
 
-Window corners are `radius_window` (6). Bar groups and notifications are `radius_popup` (10). The clock popup is 12, and the Wi-Fi and volume popups are 8. Workspace pills stay circles.
+Window corners are `radius_window` (12). Bar groups, notifications and popups are `radius_popup` (16). Windows cast a shadow (`shadow_range`, `shadow_alpha`). The active border is a gradient from the bright accent to the dim accent. Workspace pills stay circles.
 
 `~/.config/genos/opacity-mode` switches `opacity_mode` between `transparent` and `opaque`, regenerates the theme, and reloads Hyprland, Waybar, and Mako. Opaque mode turns blur off.

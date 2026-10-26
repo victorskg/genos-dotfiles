@@ -36,9 +36,18 @@ apply() {
   setsid -f swaybg -i "$target" -m fill >/dev/null 2>&1
 }
 
+sync_variant() {
+  local map="$HOME/.config/genos/variants.conf" variant
+  [[ -f $map ]] || return 0
+  variant=$(awk -F= -v f="$(basename "$1")" '$1 == f { print $2; exit }' "$map")
+  [[ -n $variant ]] || return 0
+  "$HOME/.config/genos/set-variant" "$variant" || true
+}
+
 choose() {
   ln -sfn "$1" "$link"
   apply
+  sync_variant "$1"
   notify-send "Wallpaper" "$(basename "$1")" || true
 }
 
@@ -110,6 +119,7 @@ case $cmd in
       ln -sfn "${files[0]}" "$link"
     fi
     apply
+    sync_variant "$(readlink -f "$link")"
     ;;
   list)
     current=$(readlink -f "$link" 2>/dev/null || true)

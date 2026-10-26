@@ -9,6 +9,7 @@
 #include <sys/file.h>
 #include <time.h>
 #include <unistd.h>
+#include "popup.h"
 
 static int lock_fd = -1;
 
@@ -132,10 +133,8 @@ int main(void) {
     backdrop = gtk_event_box_new();
     panel = gtk_event_box_new();
     gtk_widget_set_name(panel, "panel");
-    gtk_widget_set_halign(panel, GTK_ALIGN_START);
-    gtk_widget_set_valign(panel, GTK_ALIGN_START);
-    gtk_widget_set_margin_top(panel, 36);
-    gtk_widget_set_margin_start(panel, 12);
+    popup_place(GTK_WINDOW(window), panel);
+    popup_animate(panel);
 
     box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
     gtk_widget_set_name(box, "stack");

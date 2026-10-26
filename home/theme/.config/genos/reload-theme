@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# Regenerate the theme from palette.conf and reload every running surface.
+set -Eeuo pipefail
+
+genos=$(dirname "$(readlink -f "$0")")
+
+"$genos/apply-theme"
+
+if command -v hyprctl >/dev/null 2>&1; then
+  hyprctl reload >/dev/null || true
+fi
+if pid=$(pidof waybar); then
+  kill -SIGUSR2 $pid || true
+fi
+if command -v makoctl >/dev/null 2>&1; then
+  makoctl reload || true
+fi

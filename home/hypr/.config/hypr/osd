@@ -1,0 +1,52 @@
+#!/bin/bash
+# Change volume or brightness and show the result as a Mako progress slip.
+set -euo pipefail
+
+step=5
+sink=@DEFAULT_AUDIO_SINK@
+
+show() {
+  notify-send -a genos-osd -h string:x-canonical-private-synchronous:genos-osd \
+    -h "int:value:$2" "$1"
+}
+
+volume() {
+  local out level
+  out=$(wpctl get-volume "$sink")
+  level=$(awk '{ printf "%d", $2 * 100 + 0.5 }' <<<"$out")
+  if [[ $out == *MUTED* ]]; then
+    show "󰖁  Muted" 0
+  else
+    show "$(icon_volume "$level")  Volume $level%" "$((level > 100 ? 100 : level))"
+  fi
+}
+
+icon_volume() {
+  if (($1 < 34)); then echo 󰕿; elif (($1 < 67)); then echo 󰖀; else echo 󰕾; fi
+}
+
+brightness() {
+  local dev max cur new
+  dev=$(find /sys/class/backlight -mindepth 1 -maxdepth 1 | head -n 1)
+  [[ -n $dev ]] || exit 0
+  max=$(<"$dev/max_brightness")
+  cur=$(<"$dev/brightness")
+  new=$((cur + $1 * max * step / 100))
+  ((new < max / 100 + 1)) && new=$((max / 100 + 1))
+  ((new > max)) && new=$max
+  busctl call org.freedesktop.login1 /org/freedesktop/login1/session/auto \
+    org.freedesktop.login1.Session SetBrightness ssu backlight "$(basename "$dev")" "$new" >/dev/null
+  show "󰃠  Brightness $((new * 100 / max))%" "$((new * 100 / max))"
+}
+
+case ${1:-} in
+  volume-up) wpctl set-mute "$sink" 0; wpctl set-volume -l 1 "$sink" "$step%+"; volume ;;
+  volume-down) wpctl set-volume "$sink" "$step%-"; volume ;;
+  volume-mute) wpctl set-mute "$sink" toggle; volume ;;
+  brightness-up) brightness 1 ;;
+  brightness-down) brightness -1 ;;
+  *)
+    echo "usage: osd [volume-up|volume-down|volume-mute|brightness-up|brightness-down]" >&2
+    exit 1
+    ;;
+esac

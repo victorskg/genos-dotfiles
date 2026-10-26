@@ -6,12 +6,13 @@ window { background-color: rgba(0, 0, 0, 0); }
 #panel {
     background-color: alpha(@surface, 0.8);
     border: 1px solid alpha(@line, 0.7);
-    border-top-color: alpha(@gold, 0.45);
-    border-radius: 8px;
+    border-top-color: alpha(@accent, 0.5);
+    border-radius: 16px;
+    box-shadow: 0 14px 36px rgba(0, 0, 0, 0.55);
     padding: 0;
 }
 
-#stack { margin: 14px 12px 12px; }
+#stack { margin: 18px 16px 16px; }
 #stack > * { margin-top: 12px; }
 #stack > *:first-child { margin-top: 0; }
 
@@ -55,7 +56,7 @@ flowboxchild.connected #ssid { font-weight: bold; }
     font-size: 11px;
     margin-top: 6px;
     padding: 5px 9px;
-    border-radius: 4px;
+    border-radius: 8px;
     background-color: alpha(@danger, 0.1);
     border: 1px solid alpha(@danger, 0.3);
 }
@@ -72,7 +73,7 @@ flowboxchild #glyph {
     color: @fg;
 }
 
-#lock { color: alpha(@gold, 0.55); font-size: 10px; }
+#lock { color: alpha(@accent_bright, 0.55); font-size: 10px; }
 flowboxchild.connected #glyph { color: @accent; }
 
 /* ---------- Buttons ---------- */
@@ -80,7 +81,7 @@ button {
     background: transparent;
     border: none;
     box-shadow: none;
-    border-radius: 4px;
+    border-radius: 8px;
     padding: 2px;
     min-width: 24px;
     min-height: 24px;
@@ -98,7 +99,7 @@ button:disabled { color: @faint; background: transparent; }
 switch {
     background-color: @overlay;
     border: 1px solid @line;
-    border-radius: 6px;
+    border-radius: 10px;
     min-width: 30px;
     min-height: 16px;
     transition: background-color 220ms ease, border-color 220ms ease;
@@ -111,7 +112,7 @@ switch:checked {
 
 switch slider {
     background-color: @muted;
-    border-radius: 4px;
+    border-radius: 8px;
     min-width: 12px;
     min-height: 12px;
     transition: all 220ms ease;
@@ -133,14 +134,14 @@ flowboxchild { padding: 0; margin: 0; outline: none; }
     padding: 10px 6px 8px;
     min-width: 72px;
     min-height: 78px;
-    border-radius: 6px;
+    border-radius: 10px;
     border: 1px solid alpha(@line, 0.45);
     transition: background-color 180ms ease, border-color 180ms ease;
 }
 
 flowboxchild:hover #item {
     background-color: alpha(@overlay, 0.7);
-    border-color: alpha(@gold, 0.7);
+    border-color: alpha(@accent_bright, 0.7);
 }
 
 flowboxchild.connected #item {
@@ -154,8 +155,8 @@ flowboxchild.connected:hover #item {
 
 tooltip {
     background-color: alpha(@surface, 0.94);
-    border: 1px solid alpha(@gold, 0.45);
-    border-radius: 4px;
+    border: 1px solid alpha(@accent_bright, 0.45);
+    border-radius: 8px;
 }
 
 tooltip #tip {
@@ -172,10 +173,10 @@ entry {
     font-family: Inter, sans-serif;
     font-size: 12px;
     border: 1px solid alpha(@line, 0.8);
-    border-radius: 4px;
+    border-radius: 8px;
     padding: 5px 9px;
     min-height: 0;
-    caret-color: @gold;
+    caret-color: @accent_bright;
     margin-right: 6px;
     transition: border-color 180ms ease, box-shadow 180ms ease;
 }
@@ -199,7 +200,7 @@ scrollbar trough {
 
 scrollbar slider {
     min-width: 3px;
-    border-radius: 3px;
+    border-radius: 6px;
     background-color: alpha(@fg, 0.12);
 }
 

@@ -9,6 +9,7 @@
 #include <sys/file.h>
 #include <sys/wait.h>
 #include <unistd.h>
+#include "popup.h"
 
 #define MAX_NODES 16
 
@@ -348,41 +349,6 @@ static void on_destroy(GtkWidget *widget, gpointer data) {
     quit_app();
 }
 
-static int cursor_pos(int *x, int *y) {
-    char *argv[] = {"hyprctl", "cursorpos", NULL};
-    char *out = NULL;
-    char *err = NULL;
-    int ok = 0;
-    if (wp_exec(argv, &out, &err) == 0 && out != NULL)
-        ok = sscanf(out, "%d, %d", x, y) == 2 || sscanf(out, "%d,%d", x, y) == 2;
-    g_free(out);
-    g_free(err);
-    return ok;
-}
-
-static void place_panel(GtkWidget *window, GtkWidget *panel) {
-    GdkDisplay *display = gdk_display_get_default();
-    int x = 0;
-    int y = 0;
-    int from_right = 12;
-
-    if (display != NULL && cursor_pos(&x, &y)) {
-        GdkMonitor *monitor = gdk_display_get_monitor_at_point(display, x, y);
-        if (monitor != NULL) {
-            GdkRectangle geom;
-            int limit;
-            gtk_layer_set_monitor(GTK_WINDOW(window), monitor);
-            gdk_monitor_get_geometry(monitor, &geom);
-            from_right = geom.x + geom.width - x;
-            limit = geom.width - 320;
-            if (limit < 8) limit = 8;
-            if (from_right < 8) from_right = 8;
-            if (from_right > limit) from_right = limit;
-        }
-    }
-    gtk_widget_set_margin_end(panel, from_right);
-}
-
 static void hold_lock(void) {
     char path[PATH_MAX];
     const char *cache = g_get_user_cache_dir();
@@ -518,11 +484,9 @@ int main(void) {
     backdrop = gtk_event_box_new();
     panel = gtk_event_box_new();
     gtk_widget_set_name(panel, "panel");
-    gtk_widget_set_halign(panel, GTK_ALIGN_END);
-    gtk_widget_set_valign(panel, GTK_ALIGN_START);
-    gtk_widget_set_margin_top(panel, 36);
     gtk_widget_set_size_request(panel, 300, -1);
-    place_panel(window, panel);
+    popup_place(GTK_WINDOW(window), panel);
+    popup_animate(panel);
 
     box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
     gtk_widget_set_name(box, "stack");

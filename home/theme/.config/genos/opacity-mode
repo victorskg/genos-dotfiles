@@ -19,23 +19,13 @@ case "$mode" in
 esac
 
 tmp=$(mktemp)
-awk -F= -v next="$next" '
+awk -F= -v v="$next" '
   BEGIN { OFS = "=" }
-  $1 == "opacity_mode" { $2 = next }
+  $1 == "opacity_mode" { $2 = v }
   { print }
 ' "$palette" > "$tmp"
 mv "$tmp" "$palette"
 
-"$genos/apply-theme"
-
-if command -v hyprctl >/dev/null 2>&1; then
-  hyprctl reload >/dev/null || true
-fi
-if pid=$(pidof waybar); then
-  kill -SIGUSR2 $pid || true
-fi
-if command -v makoctl >/dev/null 2>&1; then
-  makoctl reload || true
-fi
+"$genos/reload-theme"
 
 echo "opacity mode: $next"

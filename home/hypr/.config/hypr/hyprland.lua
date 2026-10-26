@@ -17,7 +17,7 @@ hl.config({
         gaps_out = theme.gap_out,
         border_size = theme.border,
         col = {
-            active_border = theme.accent_bright,
+            active_border = { colors = { theme.accent_bright, theme.accent_dim }, angle = 45 },
             inactive_border = theme.line,
         },
         layout = "dwindle",
@@ -26,7 +26,10 @@ hl.config({
     decoration = {
         rounding = theme.radius_window,
         shadow = {
-            enabled = false,
+            enabled = true,
+            range = theme.shadow_range,
+            render_power = 3,
+            color = "rgba(000000" .. string.format("%02x", math.floor(theme.shadow_alpha * 255 + 0.5)) .. ")",
         },
         blur = {
             enabled = theme.blur_enabled,
@@ -58,14 +61,15 @@ hl.config({
     },
 })
 
-hl.curve("slow", { type = "bezier", points = { { 0.4, 0.0 }, { 0.2, 1.0 } } })
-hl.animation({ leaf = "windows", enabled = true, speed = 3, bezier = "slow" })
-hl.animation({ leaf = "windowsIn", enabled = true, speed = 3, bezier = "slow" })
-hl.animation({ leaf = "windowsOut", enabled = true, speed = 4, bezier = "slow" })
-hl.animation({ leaf = "fade", enabled = true, speed = 4, bezier = "slow" })
-hl.animation({ leaf = "layers", enabled = true, speed = 4, bezier = "slow", style = "fade" })
-hl.animation({ leaf = "border", enabled = true, speed = 6, bezier = "slow" })
-hl.animation({ leaf = "workspaces", enabled = true, speed = 4, bezier = "slow", style = "fade" })
+hl.curve("quint", { type = "bezier", points = { { 0.23, 1 }, { 0.32, 1 } } })
+hl.curve("ease", { type = "bezier", points = { { 0.4, 0.0 }, { 0.2, 1.0 } } })
+hl.animation({ leaf = "windows", enabled = true, speed = 4, bezier = "quint" })
+hl.animation({ leaf = "windowsIn", enabled = true, speed = 4.5, bezier = "quint", style = "popin 90%" })
+hl.animation({ leaf = "windowsOut", enabled = true, speed = 3, bezier = "ease", style = "popin 90%" })
+hl.animation({ leaf = "fade", enabled = true, speed = 4, bezier = "ease" })
+hl.animation({ leaf = "layers", enabled = true, speed = 4, bezier = "quint", style = "fade" })
+hl.animation({ leaf = "border", enabled = true, speed = 6, bezier = "ease" })
+hl.animation({ leaf = "workspaces", enabled = true, speed = 5, bezier = "quint", style = "slidefade 12%" })
 
 local function layer_blur(name, namespace)
     hl.layer_rule({
@@ -107,6 +111,14 @@ hl.bind(mod .. " + SHIFT + period", hl.dsp.window.move({ workspace = "r+1" }))
 
 hl.bind("Print", hl.dsp.exec_cmd(home .. "/.config/hypr/screenshot"))
 hl.bind("SHIFT + Print", hl.dsp.exec_cmd(home .. "/.config/hypr/screenshot region"))
+local osd = home .. "/.config/hypr/osd"
+local held = { locked = true, repeating = true }
+hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd(osd .. " volume-up"), held)
+hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd(osd .. " volume-down"), held)
+hl.bind("XF86AudioMute", hl.dsp.exec_cmd(osd .. " volume-mute"), { locked = true })
+hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd(osd .. " brightness-up"), held)
+hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd(osd .. " brightness-down"), held)
+
 hl.bind(mod .. " + W", hl.dsp.exec_cmd(home .. "/.config/hypr/wallpaper next"))
 hl.bind(mod .. " + SHIFT + W", hl.dsp.exec_cmd(home .. "/.config/hypr/wallpaper prev"))
 

@@ -1,11 +1,13 @@
 {
   "layer": "top",
-  "position": "top",
-  "height": 32,
+  "position": "left",
+  "width": 52,
   "margin-top": 12,
+  "margin-bottom": 12,
+  "margin-left": 12,
   "spacing": 12,
-  "modules-left": ["clock"],
-  "modules-center": ["hyprland/workspaces"],
+  "modules-left": ["hyprland/workspaces"],
+  "modules-center": ["clock"],
   "modules-right": [
     "custom/media",
     "cpu",
@@ -25,14 +27,14 @@
       "enable": true,
       "update-active-window": true,
       "active-window-position": "first",
-      "icon-size": 16,
+      "icon-size": 20,
       "max-icons": 1,
       "format": "{icon}"
     }
   },
 
   "clock": {
-    "format": "{:%H:%M}",
+    "format": "{:%H\n%M}",
     "tooltip": true,
     "tooltip-format": "<tt><small>{calendar}</small></tt>",
     "calendar": {

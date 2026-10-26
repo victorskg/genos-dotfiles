@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# Set the palette variant in palette.conf and reload the theme.
+set -Eeuo pipefail
+
+genos=$(dirname "$(readlink -f "$0")")
+palette="$genos/palette.conf"
+variant="${1:-}"
+
+case "$variant" in
+  blood|eclipse|verdigris) ;;
+  *)
+    echo "usage: set-variant [blood|eclipse|verdigris]" >&2
+    exit 1
+    ;;
+esac
+
+current=$(awk -F= '$1=="variant" { print $2; exit }' "$palette")
+[[ "$current" == "$variant" ]] && exit 0
+
+tmp=$(mktemp)
+awk -F= -v v="$variant" '
+  BEGIN { OFS = "=" }
+  $1 == "variant" { $2 = v }
+  { print }
+' "$palette" > "$tmp"
+cat "$tmp" > "$palette"
+rm -f "$tmp"
+
+"$genos/reload-theme"
