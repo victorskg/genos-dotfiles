@@ -83,6 +83,7 @@ end
 layer_blur("bar-blur", "waybar")
 layer_blur("launcher-blur", "fuzzel")
 layer_blur("notification-blur", "notifications")
+layer_blur("popup-blur", "genos-popup")
 
 hl.window_rule({
     name = "open-alone",

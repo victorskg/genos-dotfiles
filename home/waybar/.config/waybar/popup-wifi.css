@@ -4,104 +4,110 @@ window { background-color: rgba(0, 0, 0, 0); }
 
 /* ---------- Panel ---------- */
 #panel {
-    background-color: alpha(@surface, 0.8);
-    border: 1px solid alpha(@line, 0.7);
+    background-color: alpha(@surface, 0.88);
+    border: 1px solid alpha(@line, 0.9);
     border-top-color: alpha(@accent, 0.5);
     border-radius: 16px;
     box-shadow: 0 14px 36px rgba(0, 0, 0, 0.55);
     padding: 0;
 }
 
-#stack { margin: 18px 16px 16px; }
-#stack > * { margin-top: 12px; }
-#stack > *:first-child { margin-top: 0; }
+#stack { margin: 20px 18px 18px; }
 
-#header > button,
-#header > switch,
-#secret-row > button {
-    margin-left: 6px;
-}
+#caption { margin-top: 2px; }
+#stack > #list-wrap { margin-top: 14px; }
+#stack > #secret { margin-top: 12px; }
+#stack > #error { margin-top: 10px; }
+#stack > #rescan { margin-top: 14px; }
 
-#secret > * { margin-top: 6px; }
+#secret > * { margin-top: 8px; }
 #secret > *:first-child { margin-top: 0; }
+#secret-row > button { margin-left: 6px; }
 
 /* ---------- Typography ---------- */
+#title {
+    color: @fg;
+    font-family: Inter, sans-serif;
+    font-size: 17px;
+    font-weight: bold;
+}
+
 #status, #pass-label {
     color: @muted;
     font-family: Inter, sans-serif;
-    font-size: 11px;
-}
-
-#status { margin-left: 6px; }
-#status.live { font-weight: bold; color: @fg; }
-
-#link {
-    font-family: "Symbols Nerd Font";
-    font-size: 14px;
-    color: @accent;
-    margin-left: 2px;
+    font-size: 12px;
 }
 
 #ssid {
     color: @fg;
     font-family: Inter, sans-serif;
-    font-size: 12px;
+    font-size: 14px;
 }
 
-flowboxchild.connected #ssid { font-weight: bold; }
+row.connected #ssid { font-weight: bold; color: @accent_bright; }
 
 #error {
     color: @danger;
     font-family: Inter, sans-serif;
-    font-size: 11px;
-    margin-top: 6px;
-    padding: 5px 9px;
-    border-radius: 8px;
+    font-size: 12px;
+    padding: 6px 10px;
+    border-radius: 10px;
     background-color: alpha(@danger, 0.1);
     border: 1px solid alpha(@danger, 0.3);
 }
 
-/* Glyphs: quiet by default, accent only on the connected network */
-#glyph, #lock {
+#glyph {
     font-family: "Symbols Nerd Font";
-    font-size: 12px;
+    font-size: 20px;
     color: @muted;
 }
 
-flowboxchild #glyph {
-    font-size: 22px;
-    color: @fg;
-}
+row.connected #glyph { color: @accent_bright; }
 
-#lock { color: alpha(@accent_bright, 0.55); font-size: 10px; }
-flowboxchild.connected #glyph { color: @accent; }
+#lock {
+    font-family: "Symbols Nerd Font";
+    font-size: 13px;
+    color: @faint;
+}
 
 /* ---------- Buttons ---------- */
 button {
     background: transparent;
     border: none;
     box-shadow: none;
-    border-radius: 8px;
+    border-radius: 10px;
     padding: 2px;
     min-width: 24px;
     min-height: 24px;
-    font-size: 12px;
+    font-size: 14px;
     color: @muted;
     transition: background-color 180ms ease, color 180ms ease;
 }
 
 button:hover { background-color: alpha(@overlay, 0.9); color: @fg; }
 button:active { background-color: alpha(@accent, 0.22); }
-button:focus { box-shadow: inset 0 0 0 1px alpha(@accent, 0.5); }
 button:disabled { color: @faint; background: transparent; }
+
+#rescan {
+    font-family: Inter, "Symbols Nerd Font", sans-serif;
+    font-size: 14px;
+    padding: 9px 12px;
+    border-radius: 999px;
+    color: @fg;
+    background-color: alpha(@accent, 0.22);
+}
+
+#rescan:hover { background-color: alpha(@accent, 0.38); color: @fg; }
+#rescan:disabled { color: @faint; background-color: alpha(@overlay, 0.6); }
 
 /* ---------- Switch ---------- */
 switch {
+    background-image: none;
     background-color: @overlay;
     border: 1px solid @line;
-    border-radius: 10px;
-    min-width: 30px;
-    min-height: 16px;
+    border-radius: 999px;
+    min-width: 44px;
+    min-height: 24px;
     transition: background-color 220ms ease, border-color 220ms ease;
 }
 
@@ -111,46 +117,61 @@ switch:checked {
 }
 
 switch slider {
+    background-image: none;
     background-color: @muted;
-    border-radius: 8px;
-    min-width: 12px;
-    min-height: 12px;
+    border: none;
+    box-shadow: none;
+    border-radius: 999px;
+    min-width: 18px;
+    min-height: 18px;
+    margin: 2px;
     transition: all 220ms ease;
 }
 
 switch:checked slider { background-color: @fg; }
 
-/* ---------- Grid ---------- */
-flowbox, flowboxchild, scrolledwindow {
+/* ---------- List ---------- */
+list, row, scrolledwindow {
     background: transparent;
     border: none;
     padding: 0;
 }
 
-flowboxchild { padding: 0; margin: 0; outline: none; }
+row { margin: 0; outline: none; opacity: 0; transition: opacity 220ms ease; }
+row.in { opacity: 1; }
 
 #item {
-    margin: 0;
-    padding: 10px 6px 8px;
-    min-width: 72px;
-    min-height: 78px;
-    border-radius: 10px;
-    border: 1px solid alpha(@line, 0.45);
+    margin: 2px 0;
+    padding: 10px 12px;
+    border-radius: 12px;
+    border: 1px solid transparent;
     transition: background-color 180ms ease, border-color 180ms ease;
 }
 
-flowboxchild:hover #item {
-    background-color: alpha(@overlay, 0.7);
-    border-color: alpha(@accent_bright, 0.7);
+row:hover #item {
+    background-color: alpha(@overlay, 0.8);
 }
 
-flowboxchild.connected #item {
-    background-color: alpha(@accent, 0.1);
-    border-color: alpha(@accent, 0.7);
+row.connected #item {
+    background-color: alpha(@accent, 0.12);
+    border-color: alpha(@accent, 0.6);
 }
 
-flowboxchild.connected:hover #item {
-    border-color: @accent;
+#action {
+    font-family: "Symbols Nerd Font";
+    font-size: 15px;
+    color: @muted;
+    min-width: 30px;
+    min-height: 30px;
+    border-radius: 999px;
+    background-color: alpha(@overlay, 0.9);
+}
+
+row:hover #action { color: @fg; }
+
+row.connected #action {
+    background-color: @accent;
+    color: @fg;
 }
 
 tooltip {

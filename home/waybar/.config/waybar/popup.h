@@ -1,6 +1,7 @@
 #ifndef POPUP_H
 #define POPUP_H
 
+#include <gtk-layer-shell.h>
 #include <gtk/gtk.h>
 #include <stdio.h>
 
@@ -52,6 +53,7 @@ static void popup_place(GtkWindow *window, GtkWidget *panel) {
     int x = 0;
     int y = 0;
 
+    gtk_layer_set_namespace(window, "genos-popup");
     gtk_widget_set_halign(panel, GTK_ALIGN_START);
     gtk_widget_set_valign(panel, GTK_ALIGN_START);
     gtk_widget_set_margin_start(panel, POPUP_LEFT);

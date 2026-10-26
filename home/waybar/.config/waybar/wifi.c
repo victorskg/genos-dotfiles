@@ -49,10 +49,8 @@ typedef struct {
     GtkWidget *list;
     GtkWidget *scroll;
     GtkWidget *status;
-    GtkWidget *link;
     GtkWidget *sw;
     GtkWidget *refresh;
-    GtkWidget *disconnect;
     GtkWidget *spinner;
     GtkWidget *pass_box;
     GtkWidget *pass_label;
@@ -400,7 +398,6 @@ static void set_busy(int busy) {
     gtk_widget_set_sensitive(app.list, !busy);
     gtk_widget_set_sensitive(app.refresh, !busy);
     gtk_widget_set_sensitive(app.sw, !busy);
-    gtk_widget_set_sensitive(app.disconnect, !busy);
     gtk_widget_set_sensitive(app.pass_box, !busy);
     if (busy) {
         gtk_spinner_start(GTK_SPINNER(app.spinner));
@@ -442,8 +439,6 @@ static void start_job(Job *job, const char *status) {
     }
     if (status != NULL) {
         gtk_label_set_text(GTK_LABEL(app.status), status);
-        gtk_style_context_remove_class(gtk_widget_get_style_context(app.status), "live");
-        gtk_widget_hide(app.link);
     }
     set_busy(1);
     thread = g_thread_try_new("nm", worker, job, &error);
@@ -491,99 +486,104 @@ static void clear_list(void) {
     g_list_free(children);
 }
 
-static gboolean tile_tip(GtkWidget *widget, gint x, gint y, gboolean keyboard, GtkTooltip *tooltip, gpointer data) {
-    GtkWidget *label = gtk_label_new(g_object_get_data(G_OBJECT(widget), "tip"));
-    (void)x;
-    (void)y;
-    (void)keyboard;
-    (void)data;
-    gtk_widget_set_name(label, "tip");
-    gtk_label_set_justify(GTK_LABEL(label), GTK_JUSTIFY_CENTER);
-    gtk_label_set_xalign(GTK_LABEL(label), 0.5);
-    gtk_widget_set_halign(label, GTK_ALIGN_CENTER);
-    gtk_tooltip_set_custom(tooltip, label);
-    return TRUE;
+static const char *signal_glyph(int signal) {
+    return signal >= 75 ? "\xF3\xB0\xA4\xA8" :
+           signal >= 50 ? "\xF3\xB0\xA4\xA5" :
+           signal >= 25 ? "\xF3\xB0\xA4\xA2" : "\xF3\xB0\xA4\x9F";
 }
 
-static GtkWidget *net_tile(const Net *net) {
-    GtkWidget *tile = gtk_flow_box_child_new();
-    GtkWidget *box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 4);
-    const char *bars = net->signal >= 75 ? "\xF3\xB0\xA4\xA8" :
-                       net->signal >= 50 ? "\xF3\xB0\xA4\xA5" :
-                       net->signal >= 25 ? "\xF3\xB0\xA4\xA2" : "\xF3\xB0\xA4\x9F";
-    GtkWidget *glyph = gtk_label_new(bars);
+static GtkWidget *net_row(const Net *net) {
+    GtkWidget *row = gtk_list_box_row_new();
+    GtkWidget *box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 10);
+    GtkWidget *glyph = gtk_label_new(signal_glyph(net->signal));
     GtkWidget *ssid = gtk_label_new(net->ssid);
-    char *tip;
+    GtkWidget *action = gtk_label_new(net->connected ? "\xF3\xB0\x8C\xB8" : "\xF3\xB0\x8C\xB7");
+    char *tip = g_strdup_printf("%s\n%d%%", net->ssid, net->signal);
 
     gtk_widget_set_name(box, "item");
-    gtk_widget_set_hexpand(box, TRUE);
-    gtk_widget_set_vexpand(box, TRUE);
-    gtk_widget_set_halign(box, GTK_ALIGN_FILL);
-    gtk_widget_set_valign(box, GTK_ALIGN_FILL);
     gtk_widget_set_name(glyph, "glyph");
-    gtk_widget_set_halign(glyph, GTK_ALIGN_CENTER);
     gtk_widget_set_name(ssid, "ssid");
-    gtk_label_set_justify(GTK_LABEL(ssid), GTK_JUSTIFY_CENTER);
-    gtk_label_set_xalign(GTK_LABEL(ssid), 0.5);
+    gtk_label_set_xalign(GTK_LABEL(ssid), 0);
     gtk_label_set_ellipsize(GTK_LABEL(ssid), PANGO_ELLIPSIZE_END);
-    gtk_label_set_max_width_chars(GTK_LABEL(ssid), 10);
-    gtk_widget_set_halign(ssid, GTK_ALIGN_CENTER);
-    gtk_box_pack_start(GTK_BOX(box), glyph, TRUE, FALSE, 0);
-    gtk_box_pack_start(GTK_BOX(box), ssid, FALSE, FALSE, 0);
+    gtk_widget_set_hexpand(ssid, TRUE);
+    gtk_widget_set_name(action, "action");
+    gtk_widget_set_valign(action, GTK_ALIGN_CENTER);
+    gtk_box_pack_start(GTK_BOX(box), glyph, FALSE, FALSE, 0);
     if (net->secure) {
         GtkWidget *lock = gtk_label_new("\xF3\xB0\x8C\xBE");
         gtk_widget_set_name(lock, "lock");
-        gtk_widget_set_halign(lock, GTK_ALIGN_CENTER);
         gtk_box_pack_start(GTK_BOX(box), lock, FALSE, FALSE, 0);
     }
-    if (net->connected) gtk_style_context_add_class(gtk_widget_get_style_context(tile), "connected");
-    gtk_container_add(GTK_CONTAINER(tile), box);
-    g_object_set_data_full(G_OBJECT(tile), "ssid", g_strdup(net->ssid), g_free);
-    g_object_set_data(G_OBJECT(tile), "secure", GINT_TO_POINTER(net->secure));
-    g_object_set_data(G_OBJECT(tile), "connected", GINT_TO_POINTER(net->connected));
-    g_object_set_data(G_OBJECT(tile), "saved", GINT_TO_POINTER(net->saved));
-    tip = g_strdup_printf("%s\n%d%%", net->ssid, net->signal);
-    g_object_set_data_full(G_OBJECT(tile), "tip", tip, g_free);
-    gtk_widget_set_has_tooltip(tile, TRUE);
-    g_signal_connect(tile, "query-tooltip", G_CALLBACK(tile_tip), NULL);
-    return tile;
+    gtk_box_pack_start(GTK_BOX(box), ssid, TRUE, TRUE, 0);
+    gtk_box_pack_end(GTK_BOX(box), action, FALSE, FALSE, 0);
+    if (net->connected) gtk_style_context_add_class(gtk_widget_get_style_context(row), "connected");
+    gtk_container_add(GTK_CONTAINER(row), box);
+    g_object_set_data_full(G_OBJECT(row), "ssid", g_strdup(net->ssid), g_free);
+    g_object_set_data(G_OBJECT(row), "secure", GINT_TO_POINTER(net->secure));
+    g_object_set_data(G_OBJECT(row), "connected", GINT_TO_POINTER(net->connected));
+    g_object_set_data(G_OBJECT(row), "saved", GINT_TO_POINTER(net->saved));
+    gtk_widget_set_tooltip_text(row, tip);
+    g_free(tip);
+    return row;
+}
+
+static gboolean reveal_row(gpointer data) {
+    GtkWidget *row = g_weak_ref_get(data);
+
+    if (row != NULL) {
+        gtk_style_context_add_class(gtk_widget_get_style_context(row), "in");
+        g_object_unref(row);
+    }
+    return G_SOURCE_REMOVE;
+}
+
+static void free_weak(gpointer data) {
+    g_weak_ref_clear(data);
+    g_free(data);
+}
+
+/* Rows start hidden and fade in one after another. */
+static void cascade_rows(void) {
+    GList *rows = gtk_container_get_children(GTK_CONTAINER(app.list));
+    guint delay = 20;
+
+    for (GList *item = rows; item != NULL; item = item->next, delay += 40) {
+        GWeakRef *ref = g_new0(GWeakRef, 1);
+        g_weak_ref_init(ref, item->data);
+        g_timeout_add_full(G_PRIORITY_DEFAULT, delay, reveal_row, ref, free_weak);
+    }
+    g_list_free(rows);
+}
+
+static void set_caption(const char *text, int live) {
+    GtkStyleContext *ctx = gtk_widget_get_style_context(app.status);
+
+    gtk_label_set_text(GTK_LABEL(app.status), text);
+    if (live) gtk_style_context_add_class(ctx, "live");
+    else gtk_style_context_remove_class(ctx, "live");
 }
 
 static void fill_list(const Result *r) {
-    const Net *current = NULL;
+    char caption[64];
+
     clear_list();
     copy_str(app.device, sizeof app.device, r->device);
     set_switch(r->wifi_on);
     if (!r->wifi_on) {
-        gtk_label_set_text(GTK_LABEL(app.status), "Off");
-        gtk_style_context_remove_class(gtk_widget_get_style_context(app.status), "live");
-        gtk_widget_hide(app.link);
-        gtk_widget_hide(app.disconnect);
+        set_caption("Off", 0);
         gtk_widget_hide(app.scroll);
         return;
     }
     gtk_widget_show(app.scroll);
-    for (int i = 0; i < r->nnets; i++) {
-        if (r->nets[i].connected) current = &r->nets[i];
-        gtk_container_add(GTK_CONTAINER(app.list), net_tile(&r->nets[i]));
-    }
+    for (int i = 0; i < r->nnets; i++) gtk_container_add(GTK_CONTAINER(app.list), net_row(&r->nets[i]));
     gtk_widget_show_all(app.list);
-    if (current != NULL) {
-        gtk_label_set_text(GTK_LABEL(app.status), current->ssid);
-        gtk_style_context_add_class(gtk_widget_get_style_context(app.status), "live");
-        gtk_widget_show(app.link);
-        gtk_widget_show(app.disconnect);
-    } else if (r->nnets == 0) {
-        gtk_label_set_text(GTK_LABEL(app.status), "No networks found");
-        gtk_style_context_remove_class(gtk_widget_get_style_context(app.status), "live");
-        gtk_widget_hide(app.link);
-        gtk_widget_hide(app.disconnect);
-    } else {
-        gtk_label_set_text(GTK_LABEL(app.status), "Disconnected");
-        gtk_style_context_remove_class(gtk_widget_get_style_context(app.status), "live");
-        gtk_widget_hide(app.link);
-        gtk_widget_hide(app.disconnect);
+    cascade_rows();
+    if (r->nnets == 0) {
+        set_caption("No networks found", 0);
+        return;
     }
+    snprintf(caption, sizeof caption, "%d %s available", r->nnets, r->nnets == 1 ? "network" : "networks");
+    set_caption(caption, 0);
 }
 
 static void apply(Result *r) {
@@ -658,13 +658,17 @@ static void on_disconnect(GtkWidget *widget, gpointer data) {
     start_job(job, "Disconnecting...");
 }
 
-static void on_row(GtkFlowBox *box, GtkFlowBoxChild *row, gpointer data) {
+static void on_row(GtkListBox *box, GtkListBoxRow *row, gpointer data) {
     const char *ssid;
     (void)box;
     (void)data;
     if (row == NULL) return;
     ssid = g_object_get_data(G_OBJECT(row), "ssid");
-    if (ssid == NULL || GPOINTER_TO_INT(g_object_get_data(G_OBJECT(row), "connected"))) return;
+    if (ssid == NULL) return;
+    if (GPOINTER_TO_INT(g_object_get_data(G_OBJECT(row), "connected"))) {
+        on_disconnect(NULL, NULL);
+        return;
+    }
     hide_error();
     if (GPOINTER_TO_INT(g_object_get_data(G_OBJECT(row), "secure")) &&
         !GPOINTER_TO_INT(g_object_get_data(G_OBJECT(row), "saved"))) {
@@ -777,7 +781,7 @@ int main(void) {
         "row:hover { background-color: #313244; }"
         "row.connected, row.connected:hover { background-color: #64727D; }"
         "entry { background-color: #313244; color: #ffffff; border: none; border-radius: 6px; padding: 4px 8px; caret-color: #ffffff; }";
-    GtkWidget *window, *backdrop, *panel, *box, *header, *pass_row, *connect;
+    GtkWidget *window, *backdrop, *panel, *box, *header, *title, *caption_row, *pass_row, *connect;
     GtkCssProvider *provider;
     GdkScreen *screen;
     GdkVisual *visual;
@@ -806,7 +810,7 @@ int main(void) {
     backdrop = gtk_event_box_new();
     panel = gtk_event_box_new();
     gtk_widget_set_name(panel, "panel");
-    gtk_widget_set_size_request(panel, 280, -1);
+    gtk_widget_set_size_request(panel, 340, -1);
     popup_place(GTK_WINDOW(window), panel);
     popup_animate(panel);
 
@@ -814,44 +818,37 @@ int main(void) {
     gtk_widget_set_name(box, "stack");
     header = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
     gtk_widget_set_name(header, "header");
-    app.link = gtk_label_new("\xF3\xB0\x81\x94");
-    gtk_widget_set_name(app.link, "link");
-    gtk_widget_set_valign(app.link, GTK_ALIGN_CENTER);
-    gtk_widget_set_tooltip_text(app.link, "Connected");
+    title = gtk_label_new("Wi-Fi");
+    gtk_widget_set_name(title, "title");
+    gtk_label_set_xalign(GTK_LABEL(title), 0);
+    gtk_widget_set_hexpand(title, TRUE);
+    app.sw = gtk_switch_new();
+    gtk_widget_set_valign(app.sw, GTK_ALIGN_CENTER);
+    gtk_box_pack_start(GTK_BOX(header), title, TRUE, TRUE, 0);
+    gtk_box_pack_end(GTK_BOX(header), app.sw, FALSE, FALSE, 0);
+
+    caption_row = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 6);
+    gtk_widget_set_name(caption_row, "caption");
     app.status = gtk_label_new("Scanning...");
     gtk_widget_set_name(app.status, "status");
     gtk_label_set_xalign(GTK_LABEL(app.status), 0);
     gtk_label_set_ellipsize(GTK_LABEL(app.status), PANGO_ELLIPSIZE_END);
-    gtk_widget_set_hexpand(app.status, TRUE);
-    gtk_widget_set_valign(app.status, GTK_ALIGN_CENTER);
     app.spinner = gtk_spinner_new();
-    gtk_widget_set_valign(app.spinner, GTK_ALIGN_CENTER);
-    app.refresh = flat_button("\xF3\xB0\x91\x90", "Refresh");
-    app.disconnect = flat_button("\xF3\xB0\x8C\xB9", "Disconnect");
-    app.sw = gtk_switch_new();
-    gtk_widget_set_valign(app.sw, GTK_ALIGN_CENTER);
-    gtk_box_pack_start(GTK_BOX(header), app.link, FALSE, FALSE, 0);
-    gtk_box_pack_start(GTK_BOX(header), app.status, TRUE, TRUE, 0);
-    gtk_box_pack_start(GTK_BOX(header), app.spinner, FALSE, FALSE, 0);
-    gtk_box_pack_end(GTK_BOX(header), app.sw, FALSE, FALSE, 0);
-    gtk_box_pack_end(GTK_BOX(header), app.disconnect, FALSE, FALSE, 0);
-    gtk_box_pack_end(GTK_BOX(header), app.refresh, FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(caption_row), app.status, FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(caption_row), app.spinner, FALSE, FALSE, 0);
 
     app.scroll = gtk_scrolled_window_new(NULL, NULL);
     gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(app.scroll), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
     gtk_scrolled_window_set_propagate_natural_height(GTK_SCROLLED_WINDOW(app.scroll), TRUE);
-    gtk_scrolled_window_set_max_content_height(GTK_SCROLLED_WINDOW(app.scroll), 320);
-    gtk_scrolled_window_set_min_content_width(GTK_SCROLLED_WINDOW(app.scroll), 280);
+    gtk_scrolled_window_set_max_content_height(GTK_SCROLLED_WINDOW(app.scroll), 360);
     gtk_widget_set_name(app.scroll, "list-wrap");
-    app.list = gtk_flow_box_new();
-    gtk_flow_box_set_selection_mode(GTK_FLOW_BOX(app.list), GTK_SELECTION_NONE);
-    gtk_flow_box_set_activate_on_single_click(GTK_FLOW_BOX(app.list), TRUE);
-    gtk_flow_box_set_homogeneous(GTK_FLOW_BOX(app.list), TRUE);
-    gtk_flow_box_set_min_children_per_line(GTK_FLOW_BOX(app.list), 3);
-    gtk_flow_box_set_max_children_per_line(GTK_FLOW_BOX(app.list), 3);
-    gtk_flow_box_set_column_spacing(GTK_FLOW_BOX(app.list), 8);
-    gtk_flow_box_set_row_spacing(GTK_FLOW_BOX(app.list), 8);
+    app.list = gtk_list_box_new();
+    gtk_list_box_set_selection_mode(GTK_LIST_BOX(app.list), GTK_SELECTION_NONE);
+    gtk_list_box_set_activate_on_single_click(GTK_LIST_BOX(app.list), TRUE);
     gtk_container_add(GTK_CONTAINER(app.scroll), app.list);
+
+    app.refresh = gtk_button_new_with_label("\xF3\xB0\x91\x90  Rescan");
+    gtk_widget_set_name(app.refresh, "rescan");
 
     app.pass_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
     gtk_widget_set_name(app.pass_box, "secret");
@@ -877,9 +874,11 @@ int main(void) {
     gtk_label_set_max_width_chars(GTK_LABEL(app.error), 32);
 
     gtk_box_pack_start(GTK_BOX(box), header, FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(box), caption_row, FALSE, FALSE, 0);
     gtk_box_pack_start(GTK_BOX(box), app.scroll, FALSE, FALSE, 0);
     gtk_box_pack_start(GTK_BOX(box), app.pass_box, FALSE, FALSE, 0);
     gtk_box_pack_start(GTK_BOX(box), app.error, FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(box), app.refresh, FALSE, FALSE, 0);
     gtk_container_add(GTK_CONTAINER(panel), box);
     gtk_container_add(GTK_CONTAINER(backdrop), panel);
     gtk_container_add(GTK_CONTAINER(window), backdrop);
@@ -891,8 +890,7 @@ int main(void) {
 
     g_signal_connect(app.sw, "state-set", G_CALLBACK(on_switch), NULL);
     g_signal_connect(app.refresh, "clicked", G_CALLBACK(on_refresh), NULL);
-    g_signal_connect(app.disconnect, "clicked", G_CALLBACK(on_disconnect), NULL);
-    g_signal_connect(app.list, "child-activated", G_CALLBACK(on_row), NULL);
+    g_signal_connect(app.list, "row-activated", G_CALLBACK(on_row), NULL);
     g_signal_connect(connect, "clicked", G_CALLBACK(on_submit), NULL);
     g_signal_connect(app.pass_entry, "activate", G_CALLBACK(on_submit), NULL);
     g_signal_connect(window, "destroy", G_CALLBACK(on_destroy), NULL);
@@ -903,8 +901,6 @@ int main(void) {
     gtk_widget_show_all(window);
     gtk_widget_hide(app.pass_box);
     gtk_widget_hide(app.error);
-    gtk_widget_hide(app.link);
-    gtk_widget_hide(app.disconnect);
     gtk_widget_hide(app.spinner);
     start_refresh(0);
     gtk_main();
